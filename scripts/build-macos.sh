@@ -13,6 +13,15 @@ rm -rf "$task_bundle"
 mkdir -p "$task_bundle/Contents/MacOS" "$task_bundle/Contents/Resources"
 cp -R "$task_output/" "$task_bundle/Contents/MacOS/"
 chmod +x "$task_bundle/Contents/MacOS/GithubLauncher"
+task_iconset="$PWD/publish/GithubLauncher.iconset"
+mkdir -p "$task_iconset"
+for task_size in 16 32 128 256 512; do
+    sips -z "$task_size" "$task_size" Assets/app.png --out "$task_iconset/icon_${task_size}x${task_size}.png" >/dev/null
+    task_retina_size=$((task_size * 2))
+    sips -z "$task_retina_size" "$task_retina_size" Assets/app.png --out "$task_iconset/icon_${task_size}x${task_size}@2x.png" >/dev/null
+done
+iconutil -c icns "$task_iconset" -o "$task_bundle/Contents/Resources/GithubLauncher.icns"
+rm -rf "$task_iconset"
 task_sdl="${SDL2_LIBRARY:-/opt/homebrew/lib/libSDL2.dylib}"
 task_arch="${task_rid#osx-}"
 if [ "$task_arch" = "x64" ]; then task_arch="x86_64"; fi
@@ -32,6 +41,8 @@ cat > "$task_bundle/Contents/Info.plist" <<'PLIST'
 <key>CFBundleExecutable</key><string>GithubLauncher</string>
 <key>CFBundleIdentifier</key><string>io.gitopsgarage.githublauncher</string>
 <key>CFBundleName</key><string>Github Launcher Mac — GitOpsGarage</string>
+<key>CFBundleDisplayName</key><string>GitHub Launcher Mac</string>
+<key>CFBundleIconFile</key><string>GithubLauncher.icns</string>
 <key>CFBundleVersion</key><string>1.0.0</string>
 <key>CFBundleShortVersionString</key><string>1.0.0</string>
 <key>CFBundlePackageType</key><string>APPL</string>
