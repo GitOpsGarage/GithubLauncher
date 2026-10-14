@@ -1,0 +1,13 @@
+gemfile: Gemfile
+PreCommit:
+  NativeChecks:
+    enabled: true
+    required: true
+    description: 'Check staged changes, build the launcher, and test Mac support'
+    command: ['bash', 'scripts/check.sh']
+CommitMsg:
+  EmptyMessage:
+    enabled: true
+  TextWidth:
+    enabled: true
+    max_subject_width: 72

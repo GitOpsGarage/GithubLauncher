@@ -409,3 +409,7 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 flatpak.bat
+publish/
+
+.tools/
+.DS_Store

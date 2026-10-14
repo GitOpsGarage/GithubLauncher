@@ -18,6 +18,7 @@ namespace GithubLauncher.Services
         private readonly Dictionary<int, GamepadState> _gamepadStates = new();
         private readonly Dictionary<int, IntPtr> _gameControllers = new();
         private bool _disposed = false;
+        private bool _sdlInitialized;
         private bool _isWindowActive = true;
 
         // Gamepad deadzone threshold
@@ -42,20 +43,27 @@ namespace GithubLauncher.Services
         public InputService(Window mainWindow, AppSettings appSettings)
         {
             _mainWindow = mainWindow;
-            InitializeSDL();
+            try
+            {
+                _sdlInitialized = InitializeSDL();
+            }
+            catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException or BadImageFormatException)
+            {
+                System.Diagnostics.Debug.WriteLine($"Gamepad input unavailable: {ex.Message}");
+            }
 
-            if (appSettings.EnableGamepadInput)
+            if (appSettings.EnableGamepadInput && _sdlInitialized)
             {
                 InitializeGamepadPolling();
             }
         }
 
-        private void InitializeSDL()
+        private bool InitializeSDL()
         {
             if (SDL.SDL_Init(SDL.SDL_INIT_GAMECONTROLLER | SDL.SDL_INIT_VIDEO) < 0)
             {
                 System.Diagnostics.Debug.WriteLine($"SDL initialization failed: {SDL.SDL_GetError()}");
-                return;
+                return false;
             }
 
             // Open all available game controllers
@@ -73,10 +81,12 @@ namespace GithubLauncher.Services
                     }
                 }
             }
+            return true;
         }
 
         public void SetGamepadEnabled(bool enabled)
         {
+            if (!_sdlInitialized) return;
             if (enabled && _gamepadTimer == null)
             {
                 InitializeGamepadPolling();
@@ -490,7 +500,7 @@ namespace GithubLauncher.Services
                 }
                 _gameControllers.Clear();
 
-                SDL.SDL_Quit();
+                if (_sdlInitialized) SDL.SDL_Quit();
                 _disposed = true;
             }
         }

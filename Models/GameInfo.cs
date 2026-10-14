@@ -40,6 +40,9 @@ namespace GithubLauncher.Models
         public string? GameIconUrl { get; set; }
         public bool IsExperimental { get; set; }
         public bool IsCustom { get; set; }
+        public string CrossOverBottle { get; set; } = string.Empty;
+        public bool AllowCrossOverTesting { get; set; }
+        public bool IsMacPlatform => OperatingSystem.IsMacOS();
         private string? _customIconPath { get; set; }
         public string? CustomIconPath
         {
@@ -161,17 +164,15 @@ namespace GithubLauncher.Models
                     if (!Directory.Exists(gamePath))
                         return false;
 
-                    var executables = GameInstallationService.FindExecutableCandidates(
+                    var executables = GetExecutableCandidates(
                         gamePath,
                         SearchOption.TopDirectoryOnly,
-                        GetInstallationOptions(),
                         out _);
                     if (executables.Count <= 1)
                     {
-                        executables = GameInstallationService.FindExecutableCandidates(
+                        executables = GetExecutableCandidates(
                             gamePath,
                             SearchOption.AllDirectories,
-                            GetInstallationOptions(),
                             out _);
                     }
 
@@ -1217,7 +1218,8 @@ namespace GithubLauncher.Models
                     return;
                 }
 
-                var latestRelease = result.Releases.FirstOrDefault();
+                var latestRelease = result.Releases.FirstOrDefault(release =>
+                    !OperatingSystem.IsMacOS() || GetDownloadableAssets(release).Count > 0);
                 if (latestRelease != null && !string.IsNullOrWhiteSpace(latestRelease.tag_name))
                 {
                     LatestVersion = latestRelease.tag_name;
@@ -1401,10 +1403,11 @@ namespace GithubLauncher.Models
             if (string.IsNullOrWhiteSpace(Repository))
                 return [];
 
-            return await GitHubReleaseService.FetchReleasesWithAssetsAsync(
+            var releases = await GitHubReleaseService.FetchReleasesWithAssetsAsync(
                 httpClient,
                 Repository,
                 GetGitHubApiToken()).ConfigureAwait(false);
+            return OperatingSystem.IsMacOS() ? releases.Where(release => GetDownloadableAssets(release).Count > 0).ToList() : releases;
         }
         public async Task InstallReleaseAsync(HttpClient httpClient, string gamesFolder, AppSettings settings, GitHubRelease release, GitHubAsset selectedAsset)
         {
@@ -1412,8 +1415,10 @@ namespace GithubLauncher.Models
             await DownloadAndInstallAsync(httpClient, gamesFolder, release, settings, Status);
         }
 
-        private static List<GitHubAsset> GetDownloadableAssets(GitHubRelease release)
+        public List<GitHubAsset> GetDownloadableAssets(GitHubRelease release)
         {
+            if (OperatingSystem.IsMacOS())
+                return MacCompatibility.FilterAssets(release, MacCompatibility.Find(Repository), AllowCrossOverTesting);
             return GitHubReleaseService.GetDownloadableAssets(release);
         }
         private async Task DownloadAndInstallAsync(HttpClient httpClient, string gamesFolder, GitHubRelease? latestRelease, AppSettings settings, GameStatus status)
@@ -1440,7 +1445,8 @@ namespace GithubLauncher.Models
                 var gamePath = GetInstallPath(gamesFolder);
                 var versionFile = Path.Combine(gamePath, "version.txt");
 
-                // Check for a cached release first
+                // Check for a cached release first.
+                bool automaticRelease = latestRelease == null;
                 if (latestRelease == null)
                 {
                     if (GitHubApiCache.TryGetCachedVersion(Repository, out var cache) && cache?.CachedRelease != null)
@@ -1463,7 +1469,8 @@ namespace GithubLauncher.Models
                             return;
                         }
 
-                        latestRelease = releaseResult.Releases.FirstOrDefault();
+                        latestRelease = releaseResult.Releases.FirstOrDefault(release =>
+                            !OperatingSystem.IsMacOS() || GetDownloadableAssets(release).Count > 0);
 
                         if (latestRelease == null)
                         {
@@ -1474,6 +1481,18 @@ namespace GithubLauncher.Models
                         }
 
                         GitHubApiCache.SetCache(Repository, latestRelease.tag_name, releaseResult.ETag ?? string.Empty, latestRelease);
+                    }
+                }
+
+                if (automaticRelease && OperatingSystem.IsMacOS() && GetDownloadableAssets(latestRelease).Count == 0)
+                {
+                    latestRelease = (await FetchReleasesAsync(httpClient).ConfigureAwait(false)).FirstOrDefault();
+                    if (latestRelease == null)
+                    {
+                        await ShowMessageBoxAsync($"Nenhuma release instalável para Mac/CrossOver foi encontrada para {Name}.", "No Compatible Release");
+                        Status = GameStatus.NotInstalled;
+                        DownloadProgress = 0;
+                        return;
                     }
                 }
 
@@ -1498,7 +1517,9 @@ namespace GithubLauncher.Models
 
                 if (availableAssets.Count == 0)
                 {
-                    await ShowMessageBoxAsync($"No download files found for {Name}.", "No Assets");
+                    await ShowMessageBoxAsync(OperatingSystem.IsMacOS()
+                        ? $"Nenhum arquivo instalável para Mac/CrossOver nesta versão de {Name}. Para experimentar uma versão Windows, habilite o teste na configuração CrossOver deste jogo."
+                        : $"No download files found for {Name}.", "No Assets");
                     Status = GameStatus.NotInstalled;
                     DownloadProgress = 0;
                     return;
@@ -1521,7 +1542,7 @@ namespace GithubLauncher.Models
                 }
 
                 // Use selected download or default to first one
-                asset = SelectedDownload ?? availableAssets[0];
+                asset = availableAssets.FirstOrDefault(a => a.name == SelectedDownload?.name) ?? availableAssets[0];
 
                 // Check if Wine/Proton is needed on Linux
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -1863,6 +1884,11 @@ namespace GithubLauncher.Models
 
         static async Task InstallOrUpdateGame(string downloadPath, string gamePath, string assetName, string version)
         {
+            if (OperatingSystem.IsMacOS())
+            {
+                await MacGameInstaller.InstallAsync(downloadPath, gamePath, assetName, version).ConfigureAwait(false);
+                return;
+            }
             await GameInstallationService.InstallOrUpdateGameAsync(
                 downloadPath,
                 gamePath,
@@ -1886,6 +1912,8 @@ namespace GithubLauncher.Models
 
         internal static List<string> GetExecutableCandidates(string gamePath, SearchOption searchOption, out bool needsWine)
         {
+            if (OperatingSystem.IsMacOS())
+                return MacCompatibility.FindExecutables(gamePath, searchOption, out needsWine);
             return GameInstallationService.FindExecutableCandidates(
                 gamePath,
                 searchOption,
@@ -1966,18 +1994,16 @@ namespace GithubLauncher.Models
                 GameInstallationService.EnsureExecutableAtRoot(gamePath, GetInstallationOptions());
 
                 // Find all available executables
-                var executables = GameInstallationService.FindExecutableCandidates(
+                var executables = GetExecutableCandidates(
                     gamePath,
                     SearchOption.TopDirectoryOnly,
-                    GetInstallationOptions(),
                     out bool needsWine);
 
                 if (executables.Count == 0)
                 {
-                    executables = GameInstallationService.FindExecutableCandidates(
+                    executables = GetExecutableCandidates(
                         gamePath,
                         SearchOption.AllDirectories,
-                        GetInstallationOptions(),
                         out needsWine);
                 }
 
@@ -1991,7 +2017,7 @@ namespace GithubLauncher.Models
 
                 var settings = AppSettings.Load();
 
-                if (needsWine && !IsWindowsRunnerAvailable(settings))
+                if (needsWine && !OperatingSystem.IsMacOS() && !IsWindowsRunnerAvailable(settings))
                 {
                     await ShowMessageBoxAsync(
                         "Only a Windows executable was found, but no Linux Windows-runner is configured or detected.\n\n" +
@@ -2042,6 +2068,21 @@ namespace GithubLauncher.Models
                     startInfo.Arguments = $"\"{executablePath}\"";
                     startInfo.UseShellExecute = false;
                     startInfo.WorkingDirectory = gamePath;
+                }
+                else if (needsWine && OperatingSystem.IsMacOS())
+                {
+                    var compatibility = MacCompatibility.Find(Repository);
+                    var version = File.Exists(Path.Combine(gamePath, "version.txt"))
+                        ? File.ReadAllText(Path.Combine(gamePath, "version.txt")).Trim() : null;
+                    if (!AllowCrossOverTesting && !MacCompatibility.IsVerifiedCrossOver(compatibility, version))
+                    {
+                        await ShowMessageBoxAsync("This Windows build is not tested in CrossOver. Open this game's CrossOver configuration to enable testing, or choose a documented tested build.", "CrossOver Compatibility");
+                        return;
+                    }
+                    var bottle = !string.IsNullOrWhiteSpace(CrossOverBottle) ? CrossOverBottle :
+                        !string.IsNullOrWhiteSpace(compatibility?.Bottle) ? compatibility.Bottle : settings.CrossOverBottle;
+                    startInfo = MacCompatibility.CrossOverStartInfo(settings.CrossOverAppPath, bottle,
+                        executablePath, gamePath);
                 }
                 else if (needsWine && RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {

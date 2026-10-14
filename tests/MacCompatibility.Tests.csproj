@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../lib/GitHubLauncher.Core/GitHubLauncher.Core.csproj" />
+    <Compile Include="../Services/MacCompatibility.cs" Link="MacCompatibility.cs" />
+    <Compile Include="../Services/LauncherPaths.cs" Link="LauncherPaths.cs" />
+    <Compile Include="../Services/MacGameInstaller.cs" Link="MacGameInstaller.cs" />
+  </ItemGroup>
+</Project>

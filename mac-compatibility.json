@@ -1,0 +1,1103 @@
+{
+  "Zelda64Recomp/Zelda64Recomp": {
+    "mode": "native",
+    "release": "v1.2.2",
+    "assetName": "Zelda64Recompiled-v1.2.2-macOS.zip",
+    "verified": false,
+    "evidence": "https://github.com/Zelda64Recomp/Zelda64Recomp/releases/tag/v1.2.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Supply the original game data/ROM revision required by this project. Follow its setup guide. Published macOS build; gameplay not locally tested."
+  },
+  "harbourmasters/shipwright": {
+    "mode": "native",
+    "release": "9.3.0",
+    "assetName": "SoH-Dewey-Alpha-Mac.zip",
+    "verified": false,
+    "evidence": "https://github.com/HarbourMasters/Shipwright/releases/tag/9.3.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Supply the original game data/ROM revision required by this project. Follow its setup guide. Published macOS build; gameplay not locally tested."
+  },
+  "harbourmasters/2ship2harkinian": {
+    "mode": "native",
+    "release": "5.0.1",
+    "assetName": "2Ship-Battler-Bravo-Mac.zip",
+    "verified": false,
+    "evidence": "https://github.com/2ship2harkinian/2ship2harkinian/releases/tag/5.0.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Supply the original game data/ROM revision required by this project. Follow its setup guide. Published macOS build; gameplay not locally tested."
+  },
+  "coop-deluxe/sm64coopdx": {
+    "mode": "native",
+    "release": "v1.5.1",
+    "assetName": "sm64coopdx_macOS_ARM.zip",
+    "verified": false,
+    "evidence": "https://github.com/coop-deluxe/sm64coopdx/releases/tag/v1.5.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Supply the original game data/ROM revision required by this project. Follow its setup guide. Published macOS build; gameplay not locally tested."
+  },
+  "harbourmasters/spaghettikart": {
+    "mode": "native",
+    "release": "1.0.0",
+    "assetName": "spaghetti-mac-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/HarbourMasters/SpaghettiKart/releases/tag/1.0.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Supply the original game data/ROM revision required by this project. Follow its setup guide. Published macOS build; gameplay not locally tested."
+  },
+  "BanjoRecomp/BanjoRecomp": {
+    "mode": "native",
+    "release": "v1.0.2",
+    "assetName": "BanjoRecompiled-v1.0.2-macOS.zip",
+    "verified": false,
+    "evidence": "https://github.com/BanjoRecomp/BanjoRecomp/releases/tag/v1.0.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Supply the original game data/ROM revision required by this project. Follow its setup guide. Published macOS build; gameplay not locally tested."
+  },
+  "harbourmasters/ghostship": {
+    "mode": "native",
+    "release": "3.0.0",
+    "assetName": "Nautilus-Alfa-Mac.zip",
+    "verified": false,
+    "evidence": "https://github.com/HarbourMasters/Ghostship/releases/tag/3.0.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Supply the original game data/ROM revision required by this project. Follow its setup guide. Published macOS build; gameplay not locally tested."
+  },
+  "harbourmasters/starship": {
+    "mode": "candidate",
+    "release": "v2.0.0",
+    "assetName": "Starship-Barnard-Alfa-Windows.zip",
+    "verified": false,
+    "evidence": "https://github.com/HarbourMasters/Starship/releases/tag/v2.0.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Windows build exists. CrossOver gameplay and graphics support have not been tested. Supply the original data required by the project."
+  },
+  "DinosaurPlanetRecomp/dino-recomp": {
+    "mode": "candidate",
+    "release": "v0.3.0",
+    "assetName": "DinosaurPlanetRecompiled-v0.3.0-Windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/DinosaurPlanetRecomp/dino-recomp/releases/tag/v0.3.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Windows build exists. CrossOver gameplay and graphics support have not been tested. Supply the original data required by the project."
+  },
+  "999sian/melee-pc": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "AliveTeam/alive_reversing": {
+    "mode": "candidate",
+    "release": "github-v1.0.9",
+    "assetName": "Windows64-Debug-relive-symbols.zip",
+    "verified": false,
+    "evidence": "https://github.com/AliveTeam/alive_reversing/releases/tag/github-v1.0.9",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "BigheadSMZ/Zelda-LA-DX-HD-Updated": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "BlackLabelHQ/SymphonyRecomp": {
+    "mode": "native",
+    "release": "v0.5.1b",
+    "assetName": "SymphonyRecomp-v0.5.1b-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/BlackLabelHQ/SymphonyRecomp/releases/tag/v0.5.1b",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Brawmario/infinite-mario-64-ever": {
+    "mode": "candidate",
+    "release": "v0.1.5",
+    "assetName": "infinite-mario-64-ever.v0.1.5.windows.zip",
+    "verified": false,
+    "evidence": "https://github.com/Brawmario/infinite-mario-64-ever/releases/tag/v0.1.5",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "CTR-tools/ctr-native": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "Cellenseres/SSSV_Recomp": {
+    "mode": "native",
+    "release": "v0.2.0",
+    "assetName": "SSSVRecompiled_v0.2.0_macOS.zip",
+    "verified": false,
+    "evidence": "https://github.com/Cellenseres/SSSV_Recomp/releases/tag/v0.2.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Ed1z19/ValkyrieRecomp": {
+    "mode": "native",
+    "release": "v1.0.1",
+    "assetName": "ValkyrieRecomp-1.0.1-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/Ed1z19/ValkyrieRecomp/releases/tag/v1.0.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "ElspethThePict/S1Forever": {
+    "mode": "candidate",
+    "release": "1.5.1",
+    "assetName": "SonicForever_1.5.1_Windows.zip",
+    "verified": false,
+    "evidence": "https://github.com/ElspethThePict/S1Forever/releases/tag/1.5.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Endprodukt/cannonball-dx": {
+    "mode": "unknown",
+    "release": "1.04",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/Endprodukt/cannonball-dx/releases/tag/1.04",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Eukaryot/sonic3air": {
+    "mode": "native",
+    "release": "v26.03.28.0-stable",
+    "assetName": "sonic3air_mac_260328.dmg",
+    "verified": false,
+    "evidence": "https://github.com/Eukaryot/sonic3air/releases/tag/v26.03.28.0-stable",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "ExpansionPak/ModernGekko": {
+    "mode": "candidate",
+    "release": "kirby",
+    "assetName": "KirbyWiiRecomp-Windows-x86_64.zip",
+    "verified": false,
+    "evidence": "https://github.com/ExpansionPak/ModernGekko/releases/tag/kirby",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "HarbourMasters/Lighthouse": {
+    "mode": "native",
+    "release": "1.1.0",
+    "assetName": "Lighthouse-Hatteras-Alfa-Mac.zip",
+    "verified": false,
+    "evidence": "https://github.com/HarbourMasters/Lighthouse/releases/tag/1.1.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "HarbourMasters/PaperBoat": {
+    "mode": "native",
+    "release": "1.0.3",
+    "assetName": "Paperboat-Mulberry-Delta-Mac.zip",
+    "verified": false,
+    "evidence": "https://github.com/HarbourMasters/PaperBoat/releases/tag/1.0.3",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "HarvestMoon64Recomp/HarvestMoon64Recomp": {
+    "mode": "native",
+    "release": "v1.2.2",
+    "assetName": "HarvestMoon64Recompiled-v1.2.2-macOS.zip",
+    "verified": false,
+    "evidence": "https://github.com/HarvestMoon64Recomp/HarvestMoon64Recomp/releases/tag/v1.2.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "HollywoodAkeem/SVR07-Recomp": {
+    "mode": "unknown",
+    "release": "v1.0",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/HollywoodAkeem/SVR07-Recomp/releases/tag/v1.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "JHDev2006/Super-Mario-Bros.-Remastered-Public": {
+    "mode": "candidate",
+    "release": "1.1-stable",
+    "assetName": "Windows.zip",
+    "verified": false,
+    "evidence": "https://github.com/JHDev2006/Super-Mario-Bros.-Remastered-Public/releases/tag/1.1-stable",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "JRickey/BattleShip": {
+    "mode": "native",
+    "release": "v1.6",
+    "assetName": "BattleShip-JP.dmg",
+    "verified": false,
+    "evidence": "https://github.com/JRickey/BattleShip/releases/tag/v1.6",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Legend-of-Dragoon-Modding/Severed-Chains": {
+    "mode": "native",
+    "release": "devbuild",
+    "assetName": "Severed_Chains_MacOS_Intel.tar.gz",
+    "verified": false,
+    "evidence": "https://github.com/Legend-of-Dragoon-Modding/Severed-Chains/releases/tag/devbuild",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "LittleBitUA/DPRecomp": {
+    "mode": "candidate",
+    "release": "v2.0.14",
+    "assetName": "DPRecomp-2.0.14-win64.zip",
+    "verified": false,
+    "evidence": "https://github.com/LittleBitUA/DPRecomp/releases/tag/v2.0.14",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Madxbio97/SF-pc-port": {
+    "mode": "unknown",
+    "release": "0.2.0-beta.2",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/Madxbio97/SF-pc-port/releases/tag/0.2.0-beta.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Matteo842/CrashBandicoot-Launcher": {
+    "mode": "candidate",
+    "release": "2.2",
+    "assetName": "CrashBandicoot.exe",
+    "verified": false,
+    "evidence": "https://github.com/Matteo842/CrashBandicoot-Launcher/releases/tag/2.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "MegaMan64Recomp/MegaMan64Recompiled": {
+    "mode": "native",
+    "release": "v0.9.1",
+    "assetName": "MegaMan64Recompiled-v0.9.1-macOS.zip",
+    "verified": false,
+    "evidence": "https://github.com/MegaMan64Recomp/MegaMan64Recompiled/releases/tag/v0.9.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Mikompilation/MikuPan": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "OpenDriver2/REDRIVER2": {
+    "mode": "candidate",
+    "release": "7.4-rc2",
+    "assetName": "REDRIVER2_Win32_Release_dev.zip",
+    "verified": false,
+    "evidence": "https://github.com/OpenDriver2/REDRIVER2/releases/tag/7.4-rc2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "RPCS3/rpcs3": {
+    "mode": "unknown",
+    "release": "v0.0.43",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/RPCS3/rpcs3/releases/tag/v0.0.43",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "RadzPrower/Super-Metroid-Launcher": {
+    "mode": "unknown",
+    "release": "v1.0",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/RadzPrower/Super-Metroid-Launcher/releases/tag/v1.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "RadzPrower/Zelda-3-Launcher": {
+    "mode": "unknown",
+    "release": "v1.3.6.1",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/RadzPrower/Zelda-3-Launcher/releases/tag/v1.3.6.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Rainchus/ChameleonTwist1-JP-Recomp": {
+    "mode": "unknown",
+    "release": "v0.1",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/Rainchus/ChameleonTwist1-JP-Recomp/releases/tag/v0.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Rainchus/Donkey-Kong-64-Recompiled": {
+    "mode": "native",
+    "release": "v1.0.3",
+    "assetName": "DK64Recompiled-macOS-ARM64-Release-1-0-3.zip",
+    "verified": false,
+    "evidence": "https://github.com/Rainchus/Donkey-Kong-64-Recompiled/releases/tag/v1.0.3",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Rainchus/Quest64-Recomp": {
+    "mode": "unknown",
+    "release": "v0.1",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/Rainchus/Quest64-Recomp/releases/tag/v0.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "RevoSucks/BM64Recomp": {
+    "mode": "native",
+    "release": "v1.0.0",
+    "assetName": "BM64Recompiled-macOS-Release.zip",
+    "verified": false,
+    "evidence": "https://github.com/RevoSucks/BM64Recomp/releases/tag/v1.0.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "RevoSucks/BMHeroRecomp": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "Rosalie241/RMG": {
+    "mode": "candidate",
+    "release": "v0.9.0",
+    "assetName": "RMG-Setup-Windows64-v0.9.0.exe",
+    "verified": false,
+    "evidence": "https://github.com/Rosalie241/RMG/releases/tag/v0.9.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "SMCGames/Paper-Mario-ReCut": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "SSunnKing/Open-Nectar---Pikmin-Native-PC-Port": {
+    "mode": "candidate",
+    "release": "0.9.2",
+    "assetName": "nectar-windows.zip",
+    "verified": false,
+    "evidence": "https://github.com/SSunnKing/Open-Nectar---Pikmin-Native-PC-Mobile-Port/releases/tag/0.9.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "SlickAmogus/silent-hill-decomp": {
+    "mode": "native",
+    "release": "crossplatform-beta",
+    "assetName": "SHPC-macos-arm64_2026.09.27.1.zip",
+    "verified": false,
+    "evidence": "https://github.com/SlickAmogus/silent-hill-decomp/releases/tag/crossplatform-beta",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "SolarCookies/TiP-Recomp": {
+    "mode": "candidate",
+    "release": "1.13.0",
+    "assetName": "retip_1.13.0_windows.zip",
+    "verified": false,
+    "evidence": "https://github.com/SolarCookies/TiP-Recomp/releases/tag/1.13.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "StonedModder/auto-tmc": {
+    "mode": "candidate",
+    "release": "1.0.1",
+    "assetName": "AutoTMC-Windows.exe",
+    "verified": false,
+    "evidence": "https://github.com/StonedModder/auto-tmc/releases/tag/1.0.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "SunJaycy/GoldenEye-Recomp": {
+    "mode": "unknown",
+    "release": "Goldeneye1.2.4",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/SunJaycy/GoldenEye-Recomp/releases/tag/Goldeneye1.2.4",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "TeamWheelWizard/WheelWizard": {
+    "mode": "native",
+    "release": "v2.6.2",
+    "assetName": "WheelWizard-macOSarm64.dmg",
+    "verified": false,
+    "evidence": "https://github.com/TeamWheelWizard/WheelWizard/releases/tag/v2.6.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "TechnicallyComputers/Klonoa-Door-to-Phantomile": {
+    "mode": "native",
+    "release": "v0.1.4",
+    "assetName": "kdp-0.1.4-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/TechnicallyComputers/Klonoa-Door-to-Phantomile/releases/tag/v0.1.4",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "TechnicallyComputers/Street-Fighter-Alpha-3-Recomp": {
+    "mode": "native",
+    "release": "v0.2.16",
+    "assetName": "sfa-0.2.16-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/TechnicallyComputers/Street-Fighter-Alpha-3-Recomp/releases/tag/v0.2.16",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "ThatGuyMcd/DKR-R": {
+    "mode": "native",
+    "release": "Version1.0.6",
+    "assetName": "DKR-R-1.0.6-macOS-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/ThatGuyMcd/DKR-R/releases/tag/Version1.0.6",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "ThiagoLira/trouble-makers-pc-recomp": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "TwilitRealm/dusklight": {
+    "mode": "native",
+    "release": "v2.0.3",
+    "assetName": "Dusklight-v2.0.3-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/TwilitRealm/dusklight/releases/tag/v2.0.3",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Vita3K/Vita3K": {
+    "mode": "native",
+    "release": "continuous",
+    "assetName": "macos-arm64-latest.dmg",
+    "verified": false,
+    "evidence": "https://github.com/Vita3K/Vita3K/releases/tag/continuous",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "WistfulHopes/DBZ1": {
+    "mode": "candidate",
+    "release": "v0.0.2",
+    "assetName": "dbz1.exe",
+    "verified": false,
+    "evidence": "https://github.com/WistfulHopes/DBZ1/releases/tag/v0.0.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "YesterMester/TheSimpsonsGameRecomp": {
+    "mode": "candidate",
+    "release": "v0.0.6.5",
+    "assetName": "TheSimpsonsGame-Recompiled-Windows-x64-NoAVX2.zip",
+    "verified": false,
+    "evidence": "https://github.com/YesterMester/TheSimpsonsGameRecomp/releases/tag/v0.0.6.5",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "ZeldaWWHDRecomp/ZeldaWWHDRecomp": {
+    "mode": "native",
+    "release": "v0.2.14",
+    "assetName": "WindWakerHD-v0.2.14-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/ZeldaWWHDRecomp/ZeldaWWHDRecomp/releases/tag/v0.2.14",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Zorkats/G-Diffuser": {
+    "mode": "candidate",
+    "release": "v1.1.0",
+    "assetName": "G-Diffuser-v1.1.0-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/Zorkats/G-Diffuser/releases/tag/v1.1.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "Zumbo06/Crash2Recomp": {
+    "mode": "candidate",
+    "release": "v0.9.6",
+    "assetName": "Crash2Recompiled-0.9.6-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/Zumbo06/Crash2Recomp/releases/tag/v0.9.6",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "akratch/goldenballoon": {
+    "mode": "native",
+    "release": "v1.8.0",
+    "assetName": "Golden-Balloon-1.8.0-macos-arm64-unsigned.dmg",
+    "verified": false,
+    "evidence": "https://github.com/akratch/goldenballoon/releases/tag/v1.8.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "alondero/automobililamborghini-recomp": {
+    "mode": "candidate",
+    "release": "v0.8.1",
+    "assetName": "lamborghini-recomp-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/alondero/automobililamborghini-recomp/releases/tag/v0.8.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "beatrixzy/PGR4-Recomp": {
+    "mode": "unknown",
+    "release": "v1.2.1",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/beatrixzy/PGR4-Recomp/releases/tag/v1.2.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "birabittoh/KameoRePowered": {
+    "mode": "candidate",
+    "release": "v0.2.1",
+    "assetName": "kameorepowered-v0.2.1-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/birabittoh/KameoRePowered/releases/tag/v0.2.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "bryanthaboi/gen1recomp": {
+    "mode": "native",
+    "release": "v0.3.86",
+    "assetName": "gen1recomp-0.3.86-macos.zip",
+    "verified": false,
+    "evidence": "https://github.com/bryanthaboi/gen1recomp/releases/tag/v0.3.86",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "cdlewis/snowboardkids-recomp": {
+    "mode": "native",
+    "release": "v1.0.6",
+    "assetName": "SnowboardKidsRecompiled-macOS.zip",
+    "verified": false,
+    "evidence": "https://github.com/cdlewis/snowboardkids-recomp/releases/tag/v1.0.6",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "cdlewis/snowboardkids2-recomp": {
+    "mode": "native",
+    "release": "v1.0.5",
+    "assetName": "SnowboardKids2Recompiled-macOS-Release.zip",
+    "verified": false,
+    "evidence": "https://github.com/cdlewis/snowboardkids2-recomp/releases/tag/v1.0.5",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "cemu-project/cemu": {
+    "mode": "native",
+    "release": "v2.6",
+    "assetName": "cemu-2.6-macos-12-x64.dmg",
+    "verified": false,
+    "evidence": "https://github.com/cemu-project/Cemu/releases/tag/v2.6",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "citron-neo/emulator": {
+    "mode": "native",
+    "release": "2026-04-27",
+    "assetName": "Citron-macOS-nightly-0237a9b88.dmg",
+    "verified": false,
+    "evidence": "https://github.com/citron-neo/emulator/releases/tag/2026-04-27",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "coccofresco/TriAevum": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "crowded-street/3sx": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "cybervisi0n/pokeplatinum": {
+    "mode": "candidate",
+    "release": "v0.1.12",
+    "assetName": "release_win64.zip",
+    "verified": false,
+    "evidence": "https://github.com/cybervisi0n/pokeplatinum/releases/tag/v0.1.12",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "distilledorion-sketch/Initial-D-Arcade-Stage-3-Native-SH-4-Recompilation-WIP-": {
+    "mode": "unknown",
+    "release": "v2489-verified-vulkan-checkpoint",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/distilledorion-sketch/Initial-D-Arcade-Stage-3-Native-SH-4-Recompilation-WIP-/releases/tag/v2489-verified-vulkan-checkpoint",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "elliotttate/wave-race-64-recomp": {
+    "mode": "native",
+    "release": "v0.4.0-macos.3",
+    "assetName": "WaveRace64Recomp-0.4.0-macos.3-apple-silicon.zip",
+    "verified": false,
+    "evidence": "https://github.com/elliotttate/wave-race-64-recomp/releases/tag/v0.4.0-macos.3",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "fabioap-cpu/Tekken3Recomp": {
+    "mode": "candidate",
+    "release": "v2.1",
+    "assetName": "Tekken3Recomp_Release_Windows_x64_v2.1.zip",
+    "verified": false,
+    "evidence": "https://github.com/fabioap-cpu/Tekken3Recomp/releases/tag/v2.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "fgsfdsfgs/perfect_dark": {
+    "mode": "native",
+    "release": "ci-dev-build",
+    "assetName": "pd-arm64-osx.tar.xz",
+    "verified": false,
+    "evidence": "https://github.com/perfect-dark-pc-port/perfect_dark/releases/tag/ci-dev-build",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "fliperama86/cvlod_recomp": {
+    "mode": "native",
+    "release": "v0.2.27",
+    "assetName": "LodRecomp-v0.2.27-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/fliperama86/cvlod_recomp/releases/tag/v0.2.27",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "florinp93/hells-gate-recomp": {
+    "mode": "candidate",
+    "release": "v0.8.3-beta-hotfix2",
+    "assetName": "DantesInfernoInstaller.exe",
+    "verified": false,
+    "evidence": "https://github.com/florinp93/hells-gate-recomp/releases/tag/v0.8.3-beta-hotfix2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "flyinghead/flycast": {
+    "mode": "native",
+    "release": "v2.7",
+    "assetName": "flycast-macOS-2.7.zip",
+    "verified": false,
+    "evidence": "https://github.com/flyinghead/flycast/releases/tag/v2.7",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "flyngmt/ACGC-PC-Port": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "goliathret/EdgeOfTimeRecomp": {
+    "mode": "native",
+    "release": "v1.0.0",
+    "assetName": "EdgeOfTimeRecomp-v1.0.0-20261004_2039-mac-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/goliathret/EdgeOfTimeRecomp/releases/tag/v1.0.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "gopher64/gopher64": {
+    "mode": "native",
+    "release": "v1.1.40",
+    "assetName": "gopher64-macos-aarch64.zip",
+    "verified": false,
+    "evidence": "https://github.com/gopher64/gopher64/releases/tag/v1.1.40",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "guimaraf/3sxw": {
+    "mode": "native",
+    "release": "rolling-pre-release",
+    "assetName": "3SXW-1dd8515-macos.dmg",
+    "verified": false,
+    "evidence": "https://github.com/guimaraf/3sxw/releases/tag/rolling-pre-release",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "guimaraf/plusalpha-recomp": {
+    "mode": "unknown",
+    "release": "v0.2.3-alpha",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/guimaraf/plusalpha-recomp/releases/tag/v0.2.3-alpha",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "hedge-dev/UnleashedRecomp": {
+    "mode": "candidate",
+    "release": "v1.0.3",
+    "assetName": "UnleashedRecomp-Windows.zip",
+    "verified": false,
+    "evidence": "https://github.com/hedge-dev/UnleashedRecomp/releases/tag/v1.0.3",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "hrydgard/ppsspp": {
+    "mode": "native",
+    "release": "v1.20.4",
+    "assetName": "PPSSPPSDL-macOS-v1.20.4.zip",
+    "verified": false,
+    "evidence": "https://github.com/hrydgard/ppsspp/releases/tag/v1.20.4",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "jackpoison-prog/RingOut": {
+    "mode": "candidate",
+    "release": "v1.6.7",
+    "assetName": "RingOut-1.6.7-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/jackpoison-prog/RingOut/releases/tag/v1.6.7",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "jessetbh/WCWvsNWOWorldTourRecomp": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "kandowontu/starfox-enhanced": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "khasinski/rage-racer-pc": {
+    "mode": "native",
+    "release": "0.6.5-alpha",
+    "assetName": "Rage-Racer-0.6.5-alpha-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/khasinski/rage-racer-pc/releases/tag/0.6.5-alpha",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "klorfmorf/Goemon64Recomp": {
+    "mode": "native",
+    "release": "v0.2.0-dev",
+    "assetName": "Goemon64Recompiled-macOS-Release.zip",
+    "verified": false,
+    "evidence": "https://github.com/klorfmorf/Goemon64Recomp/releases/tag/v0.2.0-dev",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "kumapauz/project-reignition": {
+    "mode": "candidate",
+    "release": "v0.4.2",
+    "assetName": "Project.Reignition.Windows.v0.4.2.zip",
+    "verified": false,
+    "evidence": "https://github.com/kumapauz/project-reignition/releases/tag/v0.4.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "m1ndcrap/Sega-Superstars-Tennis-ReMatch": {
+    "mode": "unknown",
+    "release": "v0.4",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/m1ndcrap/Sega-Superstars-Tennis-ReMatch/releases/tag/v0.4",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mariopartyrd/marioparty4": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "masterspike52/reNut": {
+    "mode": "candidate",
+    "release": "texturereplacements",
+    "assetName": "renut-win-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/masterspike52/reNut/releases/tag/texturereplacements",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "masterspike52/redahm": {
+    "mode": "candidate",
+    "release": "new",
+    "assetName": "redahm-win-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/masterspike52/reDAHM/releases/tag/new",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mchughalex/skate3recomp": {
+    "mode": "native",
+    "release": "v2.0.2",
+    "assetName": "Skate3Recomp-macOS.zip",
+    "verified": false,
+    "evidence": "https://github.com/mchughalex/skate3recomp/releases/tag/v2.0.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "melonDS-emu/melonDS": {
+    "mode": "native",
+    "release": "1.1",
+    "assetName": "melonDS-1.1-macOS-universal.zip",
+    "verified": false,
+    "evidence": "https://github.com/melonDS-emu/melonDS/releases/tag/1.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mgba-emu/mgba": {
+    "mode": "native",
+    "release": "0.10.5",
+    "assetName": "mGBA-0.10.5-macos.dmg",
+    "verified": false,
+    "evidence": "https://github.com/mgba-emu/mgba/releases/tag/0.10.5",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/ApeEscapeRecomp": {
+    "mode": "candidate",
+    "release": "v0.5.2",
+    "assetName": "ApeEscapeRecomp-v0.5.2-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/ApeEscapeRecomp/releases/tag/v0.5.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/MarioKartSuperCircuitRecomp": {
+    "mode": "candidate",
+    "release": "v0.1.4",
+    "assetName": "MarioKartSuperCircuitRecomp-windows-x64-v0.1.4.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/MarioKartSuperCircuitRecomp/releases/tag/v0.1.4",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/MegaManX2Recomp": {
+    "mode": "candidate",
+    "release": "v0.1.3",
+    "assetName": "MegaManX2SNESRecomp-windows-x64-v0.1.3.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/MegaManX2Recomp/releases/tag/v0.1.3",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/MegaManX5Recomp": {
+    "mode": "candidate",
+    "release": "v0.1.0-alpha",
+    "assetName": "MegaManX5Recomp-v0.1.0-alpha-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/MegaManX5Recomp/releases/tag/v0.1.0-alpha",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/MegaManX6Recomp": {
+    "mode": "candidate",
+    "release": "v1.2.0",
+    "assetName": "MegaManX6Recomp-v1.2.0-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/MegaManX6Recomp/releases/tag/v1.2.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/MegaManXSNESRecomp": {
+    "mode": "candidate",
+    "release": "v2.2.2-alpha",
+    "assetName": "MegaManXSNESRecomp-windows-2.2.2-alpha.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/MegaManXSNESRecomp/releases/tag/v2.2.2-alpha",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/MetroidPrimeHuntersRecomp": {
+    "mode": "candidate",
+    "release": "v0.7.3-alpha",
+    "assetName": "MetroidPrimeHuntersRecomp-windows-x64-v0.7.3.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/MetroidPrimeHuntersRecomp/releases/tag/v0.7.3-alpha",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/PokemonStadiumRecomp": {
+    "mode": "candidate",
+    "release": "v0.4.7-beta",
+    "assetName": "PokemonStadiumRecomp-v0.4.7-beta-win64.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/PokemonStadiumRecomp/releases/tag/v0.4.7-beta",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "mstan/TombaRecomp": {
+    "mode": "candidate",
+    "release": "v0.20.0-alpha",
+    "assetName": "TombaRecomp-v0.20.0-alpha-windows-x64.zip",
+    "verified": false,
+    "evidence": "https://github.com/mstan/TombaRecomp/releases/tag/v0.20.0-alpha",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "new-coke/strikers": {
+    "mode": "native",
+    "release": "v1.3.0",
+    "assetName": "strikers-macos-arm64.tar.gz",
+    "verified": false,
+    "evidence": "https://github.com/new-coke/strikers/releases/tag/v1.3.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "novapowers0/BloodyRoar2Recomp": {
+    "mode": "unknown",
+    "release": "v0.7.1",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/novapowers0/BloodyRoar2Recomp/releases/tag/v0.7.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "patchzyy/Wiicompiled": {
+    "mode": "candidate",
+    "release": "v0.2.34",
+    "assetName": "WiiCompiled-Setup.exe",
+    "verified": false,
+    "evidence": "https://github.com/patchzyy/Wiicompiled/releases/tag/v0.2.34",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "project-slippi/slippi-launcher": {
+    "mode": "native",
+    "release": "v2.15.1",
+    "assetName": "Slippi-Launcher-2.15.1-arm64-mac.zip",
+    "verified": false,
+    "evidence": "https://github.com/project-slippi/slippi-launcher/releases/tag/v2.15.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "psxrestore/Condemned2Recomp": {
+    "mode": "candidate",
+    "release": "0.2.1",
+    "assetName": "Condemned2Recomp_v0.2.1_window.zip",
+    "verified": false,
+    "evidence": "https://github.com/psxrestore/Condemned2Recomp/releases/tag/0.2.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "sal063/AC6_recomp": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "shadps4-emu/shadPS4": {
+    "mode": "native",
+    "release": "v.0.20.0",
+    "assetName": "shadps4-macos-sdl-2026-0.20.0.zip",
+    "verified": false,
+    "evidence": "https://github.com/shadps4-emu/shadPS4/releases/tag/v.0.20.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "skylersaleh/SkyEmu": {
+    "mode": "native",
+    "release": "v5",
+    "assetName": "SkyEmu-v5-macOS.dmg",
+    "verified": false,
+    "evidence": "https://github.com/skylersaleh/SkyEmu/releases/tag/v5",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "snes9xgit/snes9x": {
+    "mode": "native",
+    "release": "1.63",
+    "assetName": "Snes9x-1.63-Mac.zip",
+    "verified": false,
+    "evidence": "https://github.com/snes9xgit/snes9x/releases/tag/1.63",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "snesrev/smw": {
+    "mode": "unknown",
+    "release": "v0.1",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/snesrev/smw/releases/tag/v0.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "stenzek/duckstation": {
+    "mode": "native",
+    "release": "latest",
+    "assetName": "duckstation-mac-release.zip",
+    "verified": false,
+    "evidence": "https://github.com/stenzek/duckstation/releases/tag/latest",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "strider973/Einhander-Recompiled": {
+    "mode": "native",
+    "release": "v0.1.3",
+    "assetName": "einhander-0.1.3-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/strider973/Einhander-Recompiled/releases/tag/v0.1.3",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "strider973/STRIDER-2-Recompiled": {
+    "mode": "native",
+    "release": "v0.1.2",
+    "assetName": "strider-0.1.2-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/strider973/STRIDER-2-Recompiled/releases/tag/v0.1.2",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "strider973/Street-Fighter-EX2-Plus-Recompiled": {
+    "mode": "native",
+    "release": "v0.1.0",
+    "assetName": "sfex2p-0.1.0-macos-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/strider973/Street-Fighter-EX2-Plus-Recompiled/releases/tag/v0.1.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "theboy181/drmario64_recomp_plus": {
+    "mode": "candidate",
+    "release": "1.0.0",
+    "assetName": "Dr.Mario.64.Recompiled-v1.0.0-Windows.zip",
+    "verified": false,
+    "evidence": "https://github.com/theboy181/drmario64_recomp_plus/releases/tag/1.0.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "wipeout-phantom-edition/wipeout-phantom-edition": {
+    "mode": "unknown",
+    "release": "v1.2.256",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/wipeout-phantom-edition/wipeout-phantom-edition/releases/tag/v1.2.256",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "xemu-project/xemu": {
+    "mode": "native",
+    "release": "v0.8.136",
+    "assetName": "xemu-0.8.136-macos-universal-unsigned.zip",
+    "verified": false,
+    "evidence": "https://github.com/xemu-project/xemu/releases/tag/v0.8.136",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "xenia-manager/xenia-manager": {
+    "mode": "unknown",
+    "release": "5.0.0",
+    "assetName": "",
+    "verified": false,
+    "evidence": "https://github.com/xenia-manager/xenia-manager/releases/tag/5.0.0",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  },
+  "yaz0r/Azel": {
+    "mode": "unknown",
+    "requirements": "No published stable release found.",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00"
+  },
+  "zolaware/reblue": {
+    "mode": "native",
+    "release": "v1.3.1",
+    "assetName": "reblue-1.3.1-mac-arm64.zip",
+    "verified": false,
+    "evidence": "https://github.com/zolaware/reblue/releases/tag/v1.3.1",
+    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
+    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+  }
+}

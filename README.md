@@ -1,4 +1,45 @@
-# Github Launcher
+# GitHub Launcher Mac — GitOpsGarage
+
+A maintained macOS fork of [SirDiabo/GithubLauncher](https://github.com/SirDiabo/GithubLauncher).
+This fork is maintained by GitOpsGarage; it is not an upstream-endorsed release.
+The original MIT license and project attribution are preserved.
+
+## macOS support
+
+- Self-contained Apple Silicon and Intel builds using Avalonia/.NET 9.
+- Native macOS releases take priority over Windows builds.
+- A release audit covers the full bundled catalog, including Twilight Princess
+  (Dusklight), Wind Waker HD, and Spider-Man: Edge of Time Recompiled.
+- Filters distinguish **Versão para Mac**, **Testado no CrossOver**,
+  **Para testar no CrossOver**, and **Sem avaliação**. Published builds are not gameplay ratings.
+- Native ZIP, TAR.GZ, TAR.XZ, TGZ, and DMG installation preserves complete payloads,
+  including tools/SDKs stored beside an app bundle.
+- CrossOver uses existing per-game bottles, without Proton. Unverified Windows
+  builds require explicit per-game testing opt-in.
+- Settings, library, cache, and default installs live outside the app bundle.
+
+See [MACOS.md](MACOS.md) for builds, game setup, data locations, and limitations.
+The launcher downloads and manages projects; it does not supply original game data.
+
+## Development and commits
+
+```sh
+git clone --recurse-submodules https://github.com/GitOpsGarage/GithubLauncher.git
+cd GithubLauncher
+bundle install
+bundle exec overcommit --install
+bundle exec overcommit --sign
+bundle exec overcommit --sign pre-commit
+bash scripts/check.sh
+bash scripts/build-macos.sh osx-arm64
+```
+
+Every commit must pass Overcommit. Do not bypass hooks. CI also runs the same checks
+before producing Mac artifacts. Run `python3 scripts/audit-mac-catalog.py` with an
+authenticated GitHub CLI to refresh bundled release evidence. GitHub API discovery
+in the app preserves cached results when offline or rate limited.
+
+## Original project documentation
 
 [![.NET 9](https://img.shields.io/badge/.NET-9-512BD4)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/github/license/SirDiabo/GithubLauncher)](https://github.com/SirDiabo/GithubLauncher/blob/main/LICENSE)
@@ -31,7 +72,7 @@ A modern, user-friendly launcher application for managing and running GitHub-hos
 
 ### Installation
 
-1. Download the latest release from the [Releases](https://github.com/SirDiabo/GithubLauncher/releases) page
+1. Download the latest release from the [Releases](https://github.com/GitOpsGarage/GithubLauncher/releases) page
 2. Extract the downloaded archive to your preferred location
 3. Run the executable.
 
@@ -87,5 +128,5 @@ Each app entry requires the following properties:
 ## Support
 
 If you encounter any issues or have questions:
-- [Open an issue](https://github.com/SirDiabo/GithubLauncher/issues)
+- [Open an issue](https://github.com/GitOpsGarage/GithubLauncher/issues)
 - Check existing issues for solutions

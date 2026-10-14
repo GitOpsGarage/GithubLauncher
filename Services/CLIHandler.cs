@@ -834,6 +834,8 @@ namespace GithubLauncher
 
         private async Task<int> UpdateLauncher()
         {
+            if (!AppSettings.Load().EnableLauncherSelfUpdates)
+                return PrintError("Launcher self-updates are disabled for this local macOS adaptation.");
             try
             {
                 string currentAppDirectory = AppDomain.CurrentDomain.BaseDirectory;

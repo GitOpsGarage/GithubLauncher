@@ -200,6 +200,7 @@ namespace GithubLauncher
             }
         }
         public bool IsLinuxPlatform => PlatformString.Contains("Linux", StringComparison.OrdinalIgnoreCase);
+        public bool IsMacPlatform => OperatingSystem.IsMacOS();
 
         private bool _isContinueVisible;
         public bool IsContinueVisible
@@ -1435,9 +1436,7 @@ namespace GithubLauncher
                     return;
                 }
 
-                var availableAssets = latestRelease.assets?
-                    .Where(asset => !asset.name.Contains("flatpak", StringComparison.OrdinalIgnoreCase))
-                    .ToList() ?? [];
+                var availableAssets = game.GetDownloadableAssets(latestRelease);
 
                 if (availableAssets.Count == 0)
                 {
@@ -1563,10 +1562,9 @@ namespace GithubLauncher
 
         private void ShowReleaseDownloadSelectionMenu(Control anchor, GameInfo game, GitHubRelease release, string preferredVersion, string skippedUpdateVersion)
         {
-            var availableAssets = release.assets?
-                .Where(asset => !asset.name.Contains("flatpak", StringComparison.OrdinalIgnoreCase))
+            var availableAssets = game.GetDownloadableAssets(release)
                 .OrderByDescending(asset => GameInfo.MatchesPlatform(asset.name, GameInfo.GetPlatformIdentifier(_settings)))
-                .ToList() ?? [];
+                .ToList();
 
             if (availableAssets.Count == 0)
                 return;
@@ -2360,7 +2358,7 @@ namespace GithubLauncher
         {
             try
             {
-                string url = "https://github.com/SirDiabo/GithubLauncher/";
+                string url = "https://github.com/GitOpsGarage/GithubLauncher/";
                 OpenUrl(url);
             }
             catch (Exception ex)
@@ -3029,6 +3027,105 @@ namespace GithubLauncher
             }
         }
 
+        private void CrossOverPath_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_settings != null && sender is TextBox textBox)
+            {
+                _settings.CrossOverAppPath = textBox.Text?.Trim() ?? string.Empty;
+                OnSettingChanged();
+            }
+        }
+
+        private async void ConfigureGameCrossOver_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem { CommandParameter: GameInfo game })
+                await ConfigureGameCrossOverAsync(game);
+        }
+
+        private async Task ConfigureGameCrossOverAsync(GameInfo game)
+        {
+            var compatibility = MacCompatibility.Find(game.Repository);
+            var dialog = new Window
+            {
+                Title = $"CrossOver — {game.Name}", Width = 520, SizeToContent = SizeToContent.Height,
+                CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            var bottle = new TextBox { Text = game.CrossOverBottle,
+                Watermark = $"Bottle padrão: {_settings.CrossOverBottle}" };
+            var testing = new CheckBox { Content = "Permitir testar versões Windows sem confirmação",
+                IsChecked = game.AllowCrossOverTesting };
+            var message = new TextBlock { TextWrapping = TextWrapping.Wrap, MaxWidth = 470 };
+            var save = new Button { Content = "Salvar" };
+            var cancel = new Button { Content = "Cancelar" };
+            cancel.Click += (_, _) => dialog.Close();
+            save.Click += async (_, _) =>
+            {
+                save.IsEnabled = false;
+                try
+                {
+                    string selectedBottle = bottle.Text?.Trim() ?? "";
+                    string effectiveBottle = !string.IsNullOrWhiteSpace(selectedBottle) ? selectedBottle :
+                        !string.IsNullOrWhiteSpace(compatibility?.Bottle) ? compatibility.Bottle : _settings.CrossOverBottle;
+                    if (testing.IsChecked == true || selectedBottle.Length > 0)
+                        _ = MacCompatibility.CrossOverStartInfo(_settings.CrossOverAppPath, effectiveBottle,
+                            Path.Combine(_gameManager.GamesFolder, "validation.exe"), _gameManager.GamesFolder);
+                    var apps = await _gameManager.GetAppsAsync();
+                    var stored = apps.FirstOrDefault(a => string.Equals(a.Repository, game.Repository, StringComparison.OrdinalIgnoreCase));
+                    if (stored == null) throw new InvalidOperationException("Adicione jogo à biblioteca antes de configurar.");
+                    stored.CrossOverBottle = selectedBottle;
+                    stored.AllowCrossOverTesting = testing.IsChecked == true;
+                    await _gameManager.SaveAppsAsync(apps);
+                    game.CrossOverBottle = stored.CrossOverBottle;
+                    game.AllowCrossOverTesting = stored.AllowCrossOverTesting;
+                    game.SelectedDownload = null;
+                    game.AvailableDownloads = null;
+                    dialog.Close();
+                }
+                catch (Exception ex) { message.Text = ex.Message; save.IsEnabled = true; }
+            };
+            var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
+            buttons.Children.Add(save); buttons.Children.Add(cancel);
+            var panel = new StackPanel { Margin = new Thickness(24), Spacing = 12 };
+            panel.Children.Add(new TextBlock { Text = "Configuração deste jogo", FontSize = 18, FontWeight = FontWeight.Bold });
+            panel.Children.Add(new TextBlock
+            {
+                Text = "Escolha bottle existente no CrossOver. Versão Mac continua sendo preferida. Testar versão Windows não registra compatibilidade confirmada.",
+                TextWrapping = TextWrapping.Wrap
+            });
+            panel.Children.Add(new TextBlock { Text = compatibility?.Requirements ?? "Confira ROM/dados originais e requisitos no repositório do jogo.",
+                TextWrapping = TextWrapping.Wrap });
+            panel.Children.Add(new TextBlock { Text = "Bottle deste jogo (vazio usa padrão)" });
+            panel.Children.Add(bottle); panel.Children.Add(testing); panel.Children.Add(message); panel.Children.Add(buttons);
+            dialog.Content = panel;
+            await dialog.ShowDialog(this);
+        }
+
+        private void CrossOverBottle_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_settings != null && sender is TextBox textBox)
+            {
+                _settings.CrossOverBottle = textBox.Text?.Trim() ?? string.Empty;
+                OnSettingChanged();
+            }
+        }
+
+        private void MacCatalogFilter_Changed(object? sender, RoutedEventArgs e)
+        {
+            if (_settings != null && sender is CheckBox checkbox)
+            {
+                bool enabled = checkbox.IsChecked == true;
+                switch (checkbox.Tag as string)
+                {
+                    case "native": _settings.ShowMacNative = enabled; break;
+                    case "tested": _settings.ShowMacTested = enabled; break;
+                    case "candidate": _settings.ShowMacCandidates = enabled; break;
+                    case "unknown": _settings.ShowMacUnknown = enabled; break;
+                }
+                OnSettingChanged();
+                _ = LoadAppCatalogAsync(forceRefresh: false);
+            }
+        }
+
         private System.Threading.CancellationTokenSource? _gamePathUpdateCts;
 
         private async void GamePathTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -3565,7 +3662,7 @@ namespace GithubLauncher
                 };
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
-                var exportPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apps_export.json");
+                var exportPath = Path.Combine(LauncherPaths.DataDirectory, "apps_export.json");
                 await File.WriteAllTextAsync(exportPath, JsonSerializer.Serialize(exportData, options));
 
                 await ShowMessageBoxAsync($"Apps exported to {exportPath}", "Export Complete");
@@ -3609,8 +3706,8 @@ namespace GithubLauncher
         }
         private async Task<List<GameInfo>> LoadGamesFromJsonAsync()
         {
-            var appsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apps.json");
-            var legacyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "games.json");
+            var appsPath = Path.Combine(LauncherPaths.DataDirectory, "apps.json");
+            var legacyPath = Path.Combine(LauncherPaths.DataDirectory, "games.json");
             var sourcePath = File.Exists(appsPath) ? appsPath : legacyPath;
             if (!File.Exists(sourcePath)) return [];
 
@@ -3654,6 +3751,8 @@ namespace GithubLauncher
                     GameIconUrl = GetConfiguredIconUrl(element),
                     PreferredVersion = element.TryGetProperty("preferredVersion", out var preferredVersion) ? preferredVersion.GetString() : null,
                     SkippedUpdateVersion = element.TryGetProperty("skippedUpdateVersion", out var skippedUpdateVersion) ? skippedUpdateVersion.GetString() : null,
+                    CrossOverBottle = element.TryGetProperty("crossOverBottle", out var bottle) ? bottle.GetString() ?? "" : "",
+                    AllowCrossOverTesting = element.TryGetProperty("allowCrossOverTesting", out var testing) && testing.ValueKind == JsonValueKind.True,
                     IsExperimental = false,
                     IsCustom = true,
                     GameManager = _gameManager
@@ -3682,12 +3781,14 @@ namespace GithubLauncher
                 installPath = game.InstallPath,
                 appIconUrl = game.GameIconUrl,
                 preferredVersion = game.PreferredVersion,
-                skippedUpdateVersion = game.SkippedUpdateVersion
+                skippedUpdateVersion = game.SkippedUpdateVersion,
+                crossOverBottle = game.CrossOverBottle,
+                allowCrossOverTesting = game.AllowCrossOverTesting
             };
         }
         private async Task SaveGamesToJsonAsync(List<GameInfo> appsToSave)
         {
-            var appsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apps.json");
+            var appsPath = Path.Combine(LauncherPaths.DataDirectory, "apps.json");
             var data = new
             {
                 apps = appsToSave.Select(SerializeGame).ToList()
@@ -4256,10 +4357,10 @@ namespace GithubLauncher
 
         // App Catalog
         private static readonly string AppCatalogCachePath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory, "app_catalog_cache.json");
+            LauncherPaths.DataDirectory, "app_catalog_cache.json");
 
         private static readonly string AppCatalogVersionPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory, "app_catalog_version.txt");
+            LauncherPaths.DataDirectory, "app_catalog_version.txt");
 
         private async Task LoadAppCatalogAsync(bool forceRefresh)
         {
@@ -4280,7 +4381,10 @@ namespace GithubLauncher
             try
             {
                 string repo = _settings?.AppListRepository ?? "SirDiabo/GHLAppList";
-                string latestTag = await FetchLatestCatalogTagAsync(repo).ConfigureAwait(false);
+                string latestTag = !forceRefresh && File.Exists(AppCatalogCachePath) && File.Exists(AppCatalogVersionPath) &&
+                    File.GetLastWriteTimeUtc(AppCatalogCachePath) > DateTime.UtcNow.AddHours(-6)
+                    ? (await File.ReadAllTextAsync(AppCatalogVersionPath).ConfigureAwait(false)).Trim()
+                    : await FetchLatestCatalogTagAsync(repo).ConfigureAwait(false);
 
                 string cachedVersion = string.Empty;
                 if (File.Exists(AppCatalogVersionPath))
@@ -4293,20 +4397,32 @@ namespace GithubLauncher
 
                 if (needsDownload && !string.IsNullOrEmpty(latestTag))
                 {
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                        statusText.Text = $"Downloading catalog {latestTag}...");
-
-                    string catalogJson = await FetchCatalogJsonAsync(repo, latestTag).ConfigureAwait(false);
-                    await File.WriteAllTextAsync(AppCatalogCachePath, catalogJson).ConfigureAwait(false);
-                    await File.WriteAllTextAsync(AppCatalogVersionPath, latestTag).ConfigureAwait(false);
-                    cachedVersion = latestTag;
-
-                    if (_settings != null)
+                    try
                     {
-                        _settings.AppListCachedVersion = latestTag;
-                        OnSettingChanged();
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                            statusText.Text = $"Downloading catalog {latestTag}...");
+
+                        string catalogJson = await FetchCatalogJsonAsync(repo, latestTag).ConfigureAwait(false);
+                        using var validatedCatalog = JsonDocument.Parse(catalogJson);
+                        await File.WriteAllTextAsync(AppCatalogCachePath, catalogJson).ConfigureAwait(false);
+                        await File.WriteAllTextAsync(AppCatalogVersionPath, latestTag).ConfigureAwait(false);
+                        cachedVersion = latestTag;
+
+                        if (_settings != null)
+                        {
+                            _settings.AppListCachedVersion = latestTag;
+                            OnSettingChanged();
+                        }
+                    }
+                    catch (Exception ex) when (ex is System.Net.Http.HttpRequestException or JsonException or TaskCanceledException)
+                    {
+                        Debug.WriteLine($"Catalog download failed; using cached/bundled catalog: {ex.Message}");
                     }
                 }
+
+                var bundledCatalogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "catalog.json");
+                if (!File.Exists(AppCatalogCachePath) && File.Exists(bundledCatalogPath))
+                    File.Copy(bundledCatalogPath, AppCatalogCachePath);
 
                 if (!File.Exists(AppCatalogCachePath))
                 {
@@ -4320,13 +4436,27 @@ namespace GithubLauncher
 
                 string json = await File.ReadAllTextAsync(AppCatalogCachePath).ConfigureAwait(false);
                 var categories = ParseCatalogJson(json);
+                if (File.Exists(bundledCatalogPath))
+                {
+                    var existing = categories.SelectMany(c => c.Entries).Select(e => e.Repository).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    foreach (var category in ParseCatalogJson(await File.ReadAllTextAsync(bundledCatalogPath).ConfigureAwait(false)))
+                    {
+                        var additions = category.Entries.Where(e => existing.Add(e.Repository)).ToList();
+                        if (additions.Count > 0) categories.Add((category.Category, additions));
+                    }
+                }
+                string discoveryStatus = string.Empty;
+                if (OperatingSystem.IsMacOS() && forceRefresh)
+                    discoveryStatus = await MacReleaseDiscovery.RefreshAsync(categories.SelectMany(c => c.Entries).Select(e => e.Repository),
+                        _settings?.GitHubApiToken).ConfigureAwait(false);
 
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     if (versionText != null)
                         versionText.Text = string.IsNullOrEmpty(cachedVersion) ? string.Empty : $"Version: {cachedVersion}";
 
-                    statusText.IsVisible = false;
+                    statusText.Text = discoveryStatus;
+                    statusText.IsVisible = !string.IsNullOrEmpty(discoveryStatus);
                     catalogContent.IsVisible = true;
                     RenderCatalogCategories(catalogContent, categories);
                 });
@@ -4421,6 +4551,28 @@ namespace GithubLauncher
         private void RenderCatalogCategories(StackPanel container, List<(string Category, List<CatalogEntry> Entries)> categories)
         {
             container.Children.Clear();
+
+            if (OperatingSystem.IsMacOS())
+            {
+                var compatibility = MacCompatibility.Load();
+                categories = categories.Select(c => (c.Category, c.Entries.Where(e =>
+                {
+                    compatibility.TryGetValue(e.Repository, out var entry);
+                    return MacCompatibility.CatalogCategory(entry) switch
+                    {
+                        "native" => _settings.ShowMacNative,
+                        "tested" => _settings.ShowMacTested,
+                        "candidate" => _settings.ShowMacCandidates,
+                        _ => _settings.ShowMacUnknown
+                    };
+                }).ToList())).Where(c => c.Item2.Count > 0).ToList();
+                container.Children.Add(new TextBlock
+                {
+                    Text = "Versão para Mac: build publicada pelo projeto. Testado no CrossOver: teste documentado da versão. Para testar no CrossOver: versão Windows disponível, funcionamento não confirmado. ROM/dados originais podem ser necessários. Sem avaliação não significa incompatível.",
+                    TextWrapping = TextWrapping.Wrap, FontSize = 12,
+                    Foreground = this.FindResource("ThemeTextSecondary") as IBrush
+                });
+            }
 
             if (categories.Count == 0)
             {
@@ -4517,6 +4669,22 @@ private Border BuildCatalogCard(CatalogEntry entry, bool alreadyAdded)
             var infoStack = new StackPanel();
             infoStack.Children.Add(nameBlock);
             infoStack.Children.Add(repoBlock);
+            if (OperatingSystem.IsMacOS())
+            {
+                var compatibility = MacCompatibility.Find(entry.Repository);
+                var label = MacCompatibility.CatalogCategory(compatibility) switch
+                {
+                    "native" => "Versão para Mac",
+                    "tested" => "Testado no CrossOver",
+                    "candidate" => "Para testar no CrossOver",
+                    _ => "Sem avaliação para Mac"
+                };
+                var support = new TextBlock { Text = label, FontSize = 11, TextWrapping = TextWrapping.Wrap,
+                    Foreground = this.FindResource("ThemeTextSecondary") as IBrush };
+                ToolTip.SetTip(support, compatibility == null ? "No evidence recorded." :
+                    $"{compatibility.Release}: {compatibility.AssetName}\n{compatibility.Requirements}\n{compatibility.Evidence}");
+                infoStack.Children.Add(support);
+            }
 
             var addButton = new Button
             {
@@ -4604,6 +4772,10 @@ private Border BuildCatalogCard(CatalogEntry entry, bool alreadyAdded)
                     button.Click -= CatalogAddEntry_Click;
                     UpdateEmptyStateVisibility();
                 });
+                if (OperatingSystem.IsMacOS() && MacCompatibility.CatalogCategory(MacCompatibility.Find(entry.Repository)) == "candidate")
+                    await Dispatcher.UIThread.InvokeAsync(async () =>
+                        await ConfigureGameCrossOverAsync(_gameManager.Games.FirstOrDefault(g =>
+                            string.Equals(g.Repository, entry.Repository, StringComparison.OrdinalIgnoreCase)) ?? newApp));
             }
             catch (Exception ex)
             {

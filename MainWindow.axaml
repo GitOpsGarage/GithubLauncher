@@ -4,7 +4,7 @@
         xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
         xmlns:local="clr-namespace:GithubLauncher"
 		xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
-        Title="Github Launcher"
+        Title="GitHub Launcher Mac — GitOpsGarage"
 		Width="1280" Height="720"
 		MinWidth="750" MinHeight="490"
         Background="{Binding WindowBackground}"
@@ -117,6 +117,10 @@
 												  Click="LocateExistingInstall_Click"
 												  CommandParameter="{Binding}"
 												  IsVisible="{Binding CanLocateInstall}"/>
+                                        <MenuItem Header="Configurar CrossOver…"
+                                                  Click="ConfigureGameCrossOver_Click"
+                                                  CommandParameter="{Binding}"
+                                                  IsVisible="{Binding IsMacPlatform}"/>
 										<MenuItem Header="Update Now"
 												  Click="UpdateNowMenu_Click"
 												  CommandParameter="{Binding}"
@@ -253,6 +257,10 @@
 											  Click="LocateExistingInstall_Click"
 											  CommandParameter="{Binding}"
 											  IsVisible="{Binding CanLocateInstall}"/>
+                                        <MenuItem Header="Configurar CrossOver…"
+                                                  Click="ConfigureGameCrossOver_Click"
+                                                  CommandParameter="{Binding}"
+                                                  IsVisible="{Binding IsMacPlatform}"/>
 									<MenuItem Header="Update Now"
 											  Click="UpdateNowMenu_Click"
 											  CommandParameter="{Binding}"
@@ -1277,6 +1285,19 @@
 												Click="ClearIconCache_Click"
 												FontSize="12"/>
 
+                                        <StackPanel Spacing="6" IsVisible="{Binding IsMacPlatform}">
+                                            <TextBlock Text="CROSSOVER" FontSize="10" FontWeight="Bold"
+                                                       Foreground="{DynamicResource ThemeTextSecondary}" Margin="0,8,0,4"/>
+                                            <TextBox Watermark="/Applications/CrossOver.app"
+                                                     Text="{Binding Settings.CrossOverAppPath, Mode=TwoWay}"
+                                                     TextChanged="CrossOverPath_TextChanged"/>
+                                            <TextBox Watermark="Existing CrossOver bottle name"
+                                                     Text="{Binding Settings.CrossOverBottle, Mode=TwoWay}"
+                                                     TextChanged="CrossOverBottle_TextChanged"/>
+                                            <TextBlock Text="A versão para Mac tem preferência. Para versões Windows, configure uma bottle e habilite o teste no menu CrossOver do jogo."
+                                                       FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                                        </StackPanel>
+
 										<StackPanel Spacing="2" IsVisible="{Binding IsLinuxPlatform}">
 											<TextBlock Text="LINUX WINDOWS RUNNER"
 													   FontSize="10" FontWeight="Bold"
@@ -2049,6 +2070,16 @@
 														Click="RefreshAppCatalog_Click"/>
 											</Grid>
 											<Border Height="1" Background="{DynamicResource ThemeBorder}" Margin="0,4,0,4"/>
+                                            <WrapPanel IsVisible="{Binding IsMacPlatform}">
+                                                <CheckBox Content="Versão para Mac" Tag="native" Margin="0,0,16,0"
+                                                          IsChecked="{Binding Settings.ShowMacNative, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
+                                                <CheckBox Content="Testado no CrossOver" Tag="tested" Margin="0,0,16,0"
+                                                          IsChecked="{Binding Settings.ShowMacTested, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
+                                                <CheckBox Content="Para testar no CrossOver" Tag="candidate"
+                                                          IsChecked="{Binding Settings.ShowMacCandidates, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
+                                                <CheckBox Content="Sem avaliação" Tag="unknown" Margin="16,0,0,0"
+                                                          IsChecked="{Binding Settings.ShowMacUnknown, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
+                                            </WrapPanel>
 											<TextBlock x:Name="AppCatalogStatusText"
 													   Text="Loading catalog..."
 													   FontSize="12"

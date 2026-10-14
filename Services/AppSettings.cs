@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using GitHubLauncher.Core.Models;
+using GithubLauncher.Services;
 
 namespace GithubLauncher
 {
@@ -33,10 +34,17 @@ namespace GithubLauncher
         public float BackgroundOpacity { get; set; } = 0.15f;
         public bool EnableGamepadInput { get; set; } = true;
         public string LinuxWindowsLaunchCommand { get; set; } = string.Empty;
+        public string CrossOverAppPath { get; set; } = "/Applications/CrossOver.app";
+        public string CrossOverBottle { get; set; } = string.Empty;
+        public bool ShowMacNative { get; set; } = true;
+        public bool ShowMacTested { get; set; } = true;
+        public bool ShowMacCandidates { get; set; } = false;
+        public bool ShowMacUnknown { get; set; } = false;
+        public bool EnableLauncherSelfUpdates { get; set; } = !OperatingSystem.IsMacOS();
         public string AppListRepository { get; set; } = "SirDiabo/GHLAppList";
         public string AppListCachedVersion { get; set; } = string.Empty;
         private static readonly string SettingsPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
+            LauncherPaths.DataDirectory,
             "settings.json"
         );
 

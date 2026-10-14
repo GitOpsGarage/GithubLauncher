@@ -58,11 +58,11 @@ namespace GithubLauncher.Services
 
             _appsFolder = !string.IsNullOrEmpty(_settings?.AppsPath)
                 ? _settings.AppsPath
-                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Profile.DefaultInstallFolderName);
+                : Path.Combine(LauncherPaths.DataDirectory, Profile.DefaultInstallFolderName);
 
-            _cacheFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache");
-            _appsConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apps.json");
-            _legacyGamesConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "games.json");
+            _cacheFolder = Path.Combine(LauncherPaths.DataDirectory, "Cache");
+            _appsConfigPath = Path.Combine(LauncherPaths.DataDirectory, "apps.json");
+            _legacyGamesConfigPath = Path.Combine(LauncherPaths.DataDirectory, "games.json");
 
             try
             {
@@ -234,6 +234,8 @@ namespace GithubLauncher.Services
                         GameIconUrl = GetIconUrl(appElement),
                         PreferredVersion = appElement.TryGetProperty("preferredVersion", out var preferredVersionElement) ? preferredVersionElement.GetString() : null,
                         SkippedUpdateVersion = appElement.TryGetProperty("skippedUpdateVersion", out var skippedUpdateVersionElement) ? skippedUpdateVersionElement.GetString() : null,
+                        CrossOverBottle = appElement.TryGetProperty("crossOverBottle", out var bottle) ? bottle.GetString() ?? "" : "",
+                        AllowCrossOverTesting = appElement.TryGetProperty("allowCrossOverTesting", out var testing) && testing.ValueKind == JsonValueKind.True,
                         IsExperimental = false,
                         IsCustom = true,
                         GameManager = this,
@@ -274,7 +276,9 @@ namespace GithubLauncher.Services
                 installPath = app.InstallPath,
                 appIconUrl = app.GameIconUrl,
                 preferredVersion = app.PreferredVersion,
-                skippedUpdateVersion = app.SkippedUpdateVersion
+                skippedUpdateVersion = app.SkippedUpdateVersion,
+                crossOverBottle = app.CrossOverBottle,
+                allowCrossOverTesting = app.AllowCrossOverTesting
             };
         }
 
@@ -419,7 +423,7 @@ namespace GithubLauncher.Services
                 }
                 else
                 {
-                    targetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Profile.DefaultInstallFolderName);
+                    targetPath = Path.Combine(LauncherPaths.DataDirectory, Profile.DefaultInstallFolderName);
                     Directory.CreateDirectory(targetPath);
                 }
 
@@ -435,7 +439,7 @@ namespace GithubLauncher.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error updating apps folder: {ex.Message}");
-                _appsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Profile.DefaultInstallFolderName);
+                _appsFolder = Path.Combine(LauncherPaths.DataDirectory, Profile.DefaultInstallFolderName);
                 Directory.CreateDirectory(_appsFolder);
                 throw;
             }
