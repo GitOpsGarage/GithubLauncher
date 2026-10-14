@@ -440,8 +440,8 @@
     "assetName": "sfa-0.2.16-macos-arm64.zip",
     "verified": false,
     "evidence": "https://github.com/TechnicallyComputers/Street-Fighter-Alpha-3-Recomp/releases/tag/v0.2.16",
-    "checkedAt": "2026-10-14T17:52:13.132890+00:00",
-    "requirements": "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
+    "checkedAt": "2026-10-14T18:55:28.637892+00:00",
+    "requirements": "The macOS ARM64 v0.2.16 binary dynamically links Homebrew SDL3, FreeType and HarfBuzz under /opt/homebrew/opt. Install missing libraries with brew install sdl3 freetype harfbuzz. First run asks for the original USA game disc (SLUS-00821). Starting the program is not a gameplay compatibility test."
   },
   "ThatGuyMcd/DKR-R": {
     "mode": "native",

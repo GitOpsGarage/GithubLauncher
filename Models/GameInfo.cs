@@ -2169,7 +2169,9 @@ namespace GithubLauncher.Models
                     ? gamePath
                     : (Path.GetDirectoryName(executablePath) ?? gamePath));
 
-                var gameProcess = Process.Start(startInfo);
+                var gameProcess = OperatingSystem.IsMacOS()
+                    ? await MacLaunchDiagnostics.StartAsync(startInfo)
+                    : Process.Start(startInfo);
                 GameProcessStarted?.Invoke(gameProcess);
 
                 if (GameManager != null && Application.Current != null)

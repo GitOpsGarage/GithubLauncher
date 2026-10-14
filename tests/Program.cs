@@ -167,6 +167,18 @@ try
     }
 }
 finally { if (Directory.Exists(steamFixture)) Directory.Delete(steamFixture, true); }
+if (!OperatingSystem.IsWindows())
+{
+    var failure = new System.Diagnostics.ProcessStartInfo("/bin/sh");
+    failure.ArgumentList.Add("-c");
+    failure.ArgumentList.Add("printf 'Library not loaded: libSDL3.0.dylib\\n' >&2; exit 7");
+    bool diagnosed = false;
+    try { await MacLaunchDiagnostics.StartAsync(failure); }
+    catch (InvalidOperationException ex) { diagnosed = ex.Message.Contains("code 7") && ex.Message.Contains("libSDL3.0.dylib"); }
+    Check(diagnosed, "An early startup failure must expose the actual loader error instead of silently returning.");
+    using var success = await MacLaunchDiagnostics.StartAsync(new System.Diagnostics.ProcessStartInfo("/usr/bin/true"));
+    Check(success.HasExited && success.ExitCode == 0, "Successful launch helpers that exit immediately must remain valid.");
+}
 Console.WriteLine($"Passed {checks} Mac compatibility checks.");
 
 if (OperatingSystem.IsMacOS())

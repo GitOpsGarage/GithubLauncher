@@ -40,6 +40,15 @@ Intel-only Mac binaries may require Rosetta. Each game's original data/ROM revis
 graphics requirements, and first-run import procedure remain project-specific.
 Read the project's setup guide before downloading. No ROMs are supplied.
 
+Some native releases depend on shared libraries installed by Homebrew rather than
+bundling them. For example, Street Fighter Alpha 3 Recompiled v0.2.16 (macOS ARM64)
+links SDL3, FreeType, and HarfBuzz from `/opt/homebrew/opt`. Install those dependencies
+with `brew install sdl3 freetype harfbuzz`. Homebrew stores versioned packages under
+`/opt/homebrew/Cellar` and exposes stable paths under `/opt/homebrew/opt`; these are
+shared Mac libraries, separate from the launcher and CrossOver bottles. The launcher
+reports diagnostic output when a Mac process fails during its first two seconds,
+including missing-library loader errors. It does not silently install game dependencies.
+
 ## Windows builds through CrossOver
 
 In Settings, configure the CrossOver app path and an existing bottle name.
