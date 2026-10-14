@@ -1,0 +1,58 @@
+name: Mac gameplay compatibility report
+description: Report observed gameplay on native Mac, CrossOver, or Steam / NotProton.
+title: "[Mac compatibility] "
+body:
+  - type: input
+    id: project
+    attributes:
+      label: Game repository
+      placeholder: owner/project
+    validations:
+      required: true
+  - type: input
+    id: release
+    attributes:
+      label: Exact release and asset filename
+    validations:
+      required: true
+  - type: dropdown
+    id: runner
+    attributes:
+      label: Tested launch method
+      options:
+        - Native Mac
+        - Direct CrossOver
+        - Steam / NotProton
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Observed result
+      options:
+        - Playable
+        - Playable with adjustments
+        - Unsupported
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Complete environment
+      description: Mac model/chip, macOS, CrossOver and NotProton versions, Rosetta/FEX, graphics backend, display resolution.
+    validations:
+      required: true
+  - type: textarea
+    id: gameplay
+    attributes:
+      label: Gameplay evidence and required adjustments
+      description: Date, duration/section tested, FPS, controls, audio, failures, reproducible settings, and optional screenshots/video/logs. Do not upload original game data.
+    validations:
+      required: true
+  - type: checkboxes
+    id: observed
+    attributes:
+      label: Test scope
+      options:
+        - label: I tested gameplay beyond opening the game window.
+          required: true

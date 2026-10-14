@@ -3036,68 +3036,166 @@ namespace GithubLauncher
             }
         }
 
-        private async void ConfigureGameCrossOver_Click(object sender, RoutedEventArgs e)
+        private async void ConfigureMacLaunch_Click(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem { CommandParameter: GameInfo game })
-                await ConfigureGameCrossOverAsync(game);
+                await ConfigureMacLaunchAsync(game);
         }
 
-        private async Task ConfigureGameCrossOverAsync(GameInfo game)
+        private async Task ConfigureMacLaunchAsync(GameInfo game)
         {
             var compatibility = MacCompatibility.Find(game.Repository);
             var dialog = new Window
             {
-                Title = $"CrossOver — {game.Name}", Width = 520, SizeToContent = SizeToContent.Height,
-                CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner
+                Title = $"Mac launch — {game.Name}", Width = 620, MaxHeight = 850,
+                SizeToContent = SizeToContent.Height, CanResize = false,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
+            var runner = new ComboBox { ItemsSource = new[] { "Direct CrossOver", "Steam / NotProton" },
+                SelectedIndex = game.MacWindowsRunner == "notproton" ? 1 : 0 };
             var bottle = new TextBox { Text = game.CrossOverBottle,
-                Watermark = $"Bottle padrão: {_settings.CrossOverBottle}" };
-            var testing = new CheckBox { Content = "Permitir testar versões Windows sem confirmação",
+                Watermark = $"Default bottle: {_settings.CrossOverBottle}" };
+            var tools = SteamNotProton.Tools();
+            var tool = new ComboBox { ItemsSource = tools, SelectedItem = game.SteamTool };
+            if (tool.SelectedItem == null && tools.Count == 1) tool.SelectedIndex = 0;
+            var accounts = SteamNotProton.Accounts();
+            var account = new ComboBox { ItemsSource = accounts, SelectedItem = game.SteamAccount };
+            if (account.SelectedItem == null && accounts.Count == 1) account.SelectedIndex = 0;
+            var gamePath = game.GetInstallPath(_gameManager.GamesFolder);
+            var executables = Directory.Exists(gamePath) ? Directory.GetFiles(gamePath, "*", SearchOption.AllDirectories)
+                .Where(p => p.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)).ToList() : new List<string>();
+            var executable = new ComboBox { ItemsSource = executables, SelectedItem = game.SteamExecutable };
+            if (executable.SelectedItem == null && executables.Count == 1) executable.SelectedIndex = 0;
+            var testing = new CheckBox { Content = "Allow testing unverified Windows builds",
                 IsChecked = game.AllowCrossOverTesting };
-            var message = new TextBlock { TextWrapping = TextWrapping.Wrap, MaxWidth = 470 };
-            var save = new Button { Content = "Salvar" };
-            var cancel = new Button { Content = "Cancelar" };
+            var preferWindows = new CheckBox { Content = "Use Windows build even when a native Mac build is available",
+                IsChecked = game.PreferWindowsBuild };
+            var message = new TextBlock { TextWrapping = TextWrapping.Wrap, MaxWidth = 550 };
+            var save = new Button { Content = "Save launch settings" };
+            var prepare = new Button { Content = "Prepare in Steam", IsEnabled = executables.Count > 0 };
+            var report = new Button { Content = "Record gameplay test…" };
+            var cancel = new Button { Content = "Close" };
             cancel.Click += (_, _) => dialog.Close();
+            async Task PersistAsync(bool register)
+            {
+                string selectedRunner = runner.SelectedIndex == 1 ? "notproton" : "crossover";
+                string selectedBottle = bottle.Text?.Trim() ?? "";
+                string selectedTool = tool.SelectedItem as string ?? "";
+                string selectedAccount = account.SelectedItem as string ?? "";
+                if (selectedRunner == "notproton") SteamNotProton.ValidateSetup(selectedTool, selectedAccount);
+                else if (testing.IsChecked == true || selectedBottle.Length > 0)
+                {
+                    string effective = !string.IsNullOrWhiteSpace(selectedBottle) ? selectedBottle :
+                        !string.IsNullOrWhiteSpace(compatibility?.Bottle) ? compatibility.Bottle : _settings.CrossOverBottle;
+                    _ = MacCompatibility.CrossOverStartInfo(_settings.CrossOverAppPath, effective,
+                        Path.Combine(_gameManager.GamesFolder, "validation.exe"), _gameManager.GamesFolder);
+                }
+                var apps = await _gameManager.GetAppsAsync();
+                var stored = apps.FirstOrDefault(a => string.Equals(a.Repository, game.Repository, StringComparison.OrdinalIgnoreCase));
+                if (stored == null) throw new InvalidOperationException("Add this game to the library before configuring it.");
+                ulong id = game.SteamShortcutId;
+                string selectedExe = game.SteamExecutable;
+                if (register)
+                {
+                    if (selectedRunner != "notproton") throw new InvalidOperationException("Select Steam / NotProton to prepare the shortcut.");
+                    selectedExe = executable.SelectedItem as string ?? "";
+                    id = SteamNotProton.Register(game.Name!, selectedExe, selectedTool, selectedAccount);
+                }
+                stored.CrossOverBottle = game.CrossOverBottle = selectedBottle;
+                stored.AllowCrossOverTesting = game.AllowCrossOverTesting = testing.IsChecked == true;
+                stored.MacWindowsRunner = game.MacWindowsRunner = selectedRunner;
+                stored.SteamTool = game.SteamTool = selectedTool;
+                stored.SteamAccount = game.SteamAccount = selectedAccount;
+                stored.SteamShortcutId = game.SteamShortcutId = id;
+                stored.SteamExecutable = game.SteamExecutable = selectedExe;
+                stored.PreferWindowsBuild = game.PreferWindowsBuild = preferWindows.IsChecked == true;
+                await _gameManager.SaveAppsAsync(apps);
+                game.SelectedDownload = null;
+                game.AvailableDownloads = null;
+                if (register) game.SelectedExecutable = selectedExe;
+            }
             save.Click += async (_, _) =>
             {
                 save.IsEnabled = false;
+                try { await PersistAsync(false); message.Text = "Launch settings saved. For Steam, install the Windows build and prepare its shortcut with Steam closed."; }
+                catch (Exception ex) { message.Text = ex.Message; }
+                finally { save.IsEnabled = true; }
+            };
+            prepare.Click += async (_, _) =>
+            {
+                prepare.IsEnabled = false;
+                try { await PersistAsync(true); message.Text = "Windows shortcut and NotProton tool configured. Open Steam with the selected account; Launch will use Steam."; }
+                catch (Exception ex) { message.Text = ex.Message; }
+                finally { prepare.IsEnabled = true; }
+            };
+            report.Click += async (_, _) => await RecordMacGameplayAsync(game, dialog);
+            var buttons = new WrapPanel { Orientation = Orientation.Horizontal };
+            foreach (var button in new[] { save, prepare, report, cancel }) { button.Margin = new Thickness(0, 0, 8, 8); buttons.Children.Add(button); }
+            var panel = new StackPanel { Margin = new Thickness(24), Spacing = 12 };
+            panel.Children.Add(new TextBlock { Text = "Windows launch method on this Mac", FontSize = 18, FontWeight = FontWeight.Bold });
+            panel.Children.Add(new TextBlock { Text = "Native Mac builds are preferred. NotProton uses Steam and its own prefix, separate from direct CrossOver bottles. Preparing registers the Windows executable and selected tool while Steam is closed.", TextWrapping = TextWrapping.Wrap });
+            panel.Children.Add(new TextBlock { Text = compatibility?.Requirements ?? "Check the project’s original game data and setup requirements.", TextWrapping = TextWrapping.Wrap });
+            panel.Children.Add(runner);
+            panel.Children.Add(new TextBlock { Text = "Direct CrossOver bottle (blank uses default)" }); panel.Children.Add(bottle);
+            panel.Children.Add(new TextBlock { Text = "Steam / NotProton: installed tool" }); panel.Children.Add(tool);
+            panel.Children.Add(new TextBlock { Text = "Steam account (local ID; use the same account when playing)" }); panel.Children.Add(account);
+            panel.Children.Add(new TextBlock { Text = "Installed Windows executable" }); panel.Children.Add(executable);
+            panel.Children.Add(testing);
+            panel.Children.Add(preferWindows);
+            panel.Children.Add(new TextBlock { Text = MacGameplay.Summary(compatibility), TextWrapping = TextWrapping.Wrap });
+            panel.Children.Add(message); panel.Children.Add(buttons);
+            dialog.Content = new ScrollViewer { Content = panel };
+            await dialog.ShowDialog(this);
+        }
+
+        private async Task RecordMacGameplayAsync(GameInfo game, Window owner)
+        {
+            var path = game.GetInstallPath(_gameManager.GamesFolder);
+            string Read(string file) => File.Exists(Path.Combine(path, file)) ? File.ReadAllText(Path.Combine(path, file)).Trim() : "";
+            var dialog = new Window { Title = $"Gameplay — {game.Name}", Width = 610, MaxHeight = 800,
+                SizeToContent = SizeToContent.Height, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+            var runner = new ComboBox { ItemsSource = new[] { "Native Mac", "Direct CrossOver", "Steam / NotProton" },
+                SelectedIndex = game.MacWindowsRunner == "notproton" ? 2 : 1 };
+            if (Directory.Exists(path) && MacCompatibility.FindExecutables(path, SearchOption.AllDirectories, out var needsWine).Count > 0 && !needsWine) runner.SelectedIndex = 0;
+            var result = new ComboBox { ItemsSource = new[] { "Playable", "Playable with adjustments", "Unsupported" }, SelectedIndex = -1 };
+            var release = new TextBox { Text = Read("version.txt"), Watermark = "Exact release (e.g. v1.0)" };
+            var asset = new TextBox { Text = Read("installed-asset.txt"), Watermark = "Exact release asset filename" };
+            var environment = new TextBox { Text = $"{System.Runtime.InteropServices.RuntimeInformation.OSDescription}, {System.Runtime.InteropServices.RuntimeInformation.OSArchitecture}; ",
+                Watermark = "Mac model, runtime/version, Rosetta/FEX tool, graphics backend", TextWrapping = TextWrapping.Wrap };
+            var evidence = new TextBox { AcceptsReturn = true, MinHeight = 100, TextWrapping = TextWrapping.Wrap,
+                Watermark = "Observed gameplay: duration/section, FPS, controls, audio, failures, required adjustments; optional source link" };
+            var message = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            var save = new Button { Content = "Save local report" };
+            save.Click += (_, _) =>
+            {
                 try
                 {
-                    string selectedBottle = bottle.Text?.Trim() ?? "";
-                    string effectiveBottle = !string.IsNullOrWhiteSpace(selectedBottle) ? selectedBottle :
-                        !string.IsNullOrWhiteSpace(compatibility?.Bottle) ? compatibility.Bottle : _settings.CrossOverBottle;
-                    if (testing.IsChecked == true || selectedBottle.Length > 0)
-                        _ = MacCompatibility.CrossOverStartInfo(_settings.CrossOverAppPath, effectiveBottle,
-                            Path.Combine(_gameManager.GamesFolder, "validation.exe"), _gameManager.GamesFolder);
-                    var apps = await _gameManager.GetAppsAsync();
-                    var stored = apps.FirstOrDefault(a => string.Equals(a.Repository, game.Repository, StringComparison.OrdinalIgnoreCase));
-                    if (stored == null) throw new InvalidOperationException("Adicione jogo à biblioteca antes de configurar.");
-                    stored.CrossOverBottle = selectedBottle;
-                    stored.AllowCrossOverTesting = testing.IsChecked == true;
-                    await _gameManager.SaveAppsAsync(apps);
-                    game.CrossOverBottle = stored.CrossOverBottle;
-                    game.AllowCrossOverTesting = stored.AllowCrossOverTesting;
-                    game.SelectedDownload = null;
-                    game.AvailableDownloads = null;
+                    if (result.SelectedIndex < 0) throw new InvalidOperationException("Select the result observed during gameplay.");
+                    if (runner.SelectedIndex == 2 && !SteamNotProton.Tools().Contains(game.SteamTool))
+                        throw new InvalidOperationException("Save this game's installed NotProton tool before recording its gameplay report.");
+                    MacGameplay.Save(game.Repository!, new MacGameplayReport
+                    {
+                        Runner = new[] { "native", "crossover", "notproton" }[runner.SelectedIndex],
+                        Result = new[] { "playable", "adjustments", "unsupported" }[result.SelectedIndex],
+                        Release = release.Text?.Trim() ?? "", AssetName = asset.Text?.Trim() ?? "",
+                        Environment = environment.Text?.Trim() ?? "", Evidence = evidence.Text?.Trim() ?? "", TestedAt = DateTimeOffset.UtcNow,
+                        PlatformFingerprint = MacGameplay.PlatformFingerprint,
+                        RuntimeId = MacGameplay.RuntimeIdentity(new[] { "native", "crossover", "notproton" }[runner.SelectedIndex], game.SteamTool, _settings.CrossOverAppPath)
+                    });
+                    game.RefreshMacGameplayStatus();
+                    _ = LoadAppCatalogAsync(forceRefresh: false);
                     dialog.Close();
                 }
-                catch (Exception ex) { message.Text = ex.Message; save.IsEnabled = true; }
+                catch (Exception ex) { message.Text = ex.Message; }
             };
-            var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
-            buttons.Children.Add(save); buttons.Children.Add(cancel);
             var panel = new StackPanel { Margin = new Thickness(24), Spacing = 12 };
-            panel.Children.Add(new TextBlock { Text = "Configuração deste jogo", FontSize = 18, FontWeight = FontWeight.Bold });
-            panel.Children.Add(new TextBlock
-            {
-                Text = "Escolha bottle existente no CrossOver. Versão Mac continua sendo preferida. Testar versão Windows não registra compatibilidade confirmada.",
-                TextWrapping = TextWrapping.Wrap
-            });
-            panel.Children.Add(new TextBlock { Text = compatibility?.Requirements ?? "Confira ROM/dados originais e requisitos no repositório do jogo.",
-                TextWrapping = TextWrapping.Wrap });
-            panel.Children.Add(new TextBlock { Text = "Bottle deste jogo (vazio usa padrão)" });
-            panel.Children.Add(bottle); panel.Children.Add(testing); panel.Children.Add(message); panel.Children.Add(buttons);
-            dialog.Content = panel;
-            await dialog.ShowDialog(this);
+            panel.Children.Add(new TextBlock { Text = "Record actual gameplay, beyond starting the game. Reports stay on this Mac; new releases need fresh tests. This is not Valve certification.", TextWrapping = TextWrapping.Wrap });
+            foreach (var (label, control) in new (string, Control)[] { ("Tested launch method", runner), ("Result", result),
+                ("Release", release), ("Asset", asset), ("Complete environment", environment), ("Report and adjustments", evidence) })
+            { panel.Children.Add(new TextBlock { Text = label }); panel.Children.Add(control); }
+            panel.Children.Add(message); panel.Children.Add(save);
+            dialog.Content = new ScrollViewer { Content = panel };
+            await dialog.ShowDialog(owner);
         }
 
         private void CrossOverBottle_TextChanged(object sender, TextChangedEventArgs e)
@@ -3118,6 +3216,7 @@ namespace GithubLauncher
                 {
                     case "native": _settings.ShowMacNative = enabled; break;
                     case "tested": _settings.ShowMacTested = enabled; break;
+                    case "confirmed": _settings.ShowMacConfirmedOnly = enabled; break;
                     case "candidate": _settings.ShowMacCandidates = enabled; break;
                     case "unknown": _settings.ShowMacUnknown = enabled; break;
                 }
@@ -3753,6 +3852,12 @@ namespace GithubLauncher
                     SkippedUpdateVersion = element.TryGetProperty("skippedUpdateVersion", out var skippedUpdateVersion) ? skippedUpdateVersion.GetString() : null,
                     CrossOverBottle = element.TryGetProperty("crossOverBottle", out var bottle) ? bottle.GetString() ?? "" : "",
                     AllowCrossOverTesting = element.TryGetProperty("allowCrossOverTesting", out var testing) && testing.ValueKind == JsonValueKind.True,
+                        MacWindowsRunner = element.TryGetProperty("macWindowsRunner", out var macWindowsRunner) ? macWindowsRunner.GetString() ?? "" : "crossover",
+                        SteamAccount = element.TryGetProperty("steamAccount", out var steamAccount) ? steamAccount.GetString() ?? "" : "",
+                        SteamTool = element.TryGetProperty("steamTool", out var steamTool) ? steamTool.GetString() ?? "" : "",
+                        SteamExecutable = element.TryGetProperty("steamExecutable", out var steamExecutable) ? steamExecutable.GetString() ?? "" : "",
+                        PreferWindowsBuild = element.TryGetProperty("preferWindowsBuild", out var preferWindowsBuild) && preferWindowsBuild.ValueKind == JsonValueKind.True,
+                        SteamShortcutId = element.TryGetProperty("steamShortcutId", out var steamId) && steamId.TryGetUInt64(out var id) ? id : 0,
                     IsExperimental = false,
                     IsCustom = true,
                     GameManager = _gameManager
@@ -3783,7 +3888,13 @@ namespace GithubLauncher
                 preferredVersion = game.PreferredVersion,
                 skippedUpdateVersion = game.SkippedUpdateVersion,
                 crossOverBottle = game.CrossOverBottle,
-                allowCrossOverTesting = game.AllowCrossOverTesting
+                allowCrossOverTesting = game.AllowCrossOverTesting,
+                macWindowsRunner = game.MacWindowsRunner,
+                steamAccount = game.SteamAccount,
+                steamTool = game.SteamTool,
+                steamExecutable = game.SteamExecutable,
+                preferWindowsBuild = game.PreferWindowsBuild,
+                steamShortcutId = game.SteamShortcutId
             };
         }
         private async Task SaveGamesToJsonAsync(List<GameInfo> appsToSave)
@@ -4558,6 +4669,9 @@ namespace GithubLauncher
                 categories = categories.Select(c => (c.Category, c.Entries.Where(e =>
                 {
                     compatibility.TryGetValue(e.Repository, out var entry);
+                    bool confirmed = MacGameplay.Current(entry).Any(r => r.IsPlayable);
+                    if (_settings.ShowMacConfirmedOnly) return confirmed;
+                    if (confirmed && _settings.ShowMacTested) return true;
                     return MacCompatibility.CatalogCategory(entry) switch
                     {
                         "native" => _settings.ShowMacNative,
@@ -4568,7 +4682,7 @@ namespace GithubLauncher
                 }).ToList())).Where(c => c.Item2.Count > 0).ToList();
                 container.Children.Add(new TextBlock
                 {
-                    Text = "Versão para Mac: build publicada pelo projeto. Testado no CrossOver: teste documentado da versão. Para testar no CrossOver: versão Windows disponível, funcionamento não confirmado. ROM/dados originais podem ser necessários. Sem avaliação não significa incompatível.",
+                    Text = "Mac build available means a published build exists. Gameplay tested requires a report for the release and asset, including environment and launch method. Windows candidates are untested. Only playable results filters for Playable or Playable with adjustments. Local reports are not Valve certification; original game data may be required.",
                     TextWrapping = TextWrapping.Wrap, FontSize = 12,
                     Foreground = this.FindResource("ThemeTextSecondary") as IBrush
                 });
@@ -4674,15 +4788,15 @@ private Border BuildCatalogCard(CatalogEntry entry, bool alreadyAdded)
                 var compatibility = MacCompatibility.Find(entry.Repository);
                 var label = MacCompatibility.CatalogCategory(compatibility) switch
                 {
-                    "native" => "Versão para Mac",
-                    "tested" => "Testado no CrossOver",
-                    "candidate" => "Para testar no CrossOver",
-                    _ => "Sem avaliação para Mac"
+                    "native" => "Mac build available",
+                    "tested" => "Gameplay tested",
+                    "candidate" => "Windows candidates",
+                    _ => "Unassessed for Mac"
                 };
-                var support = new TextBlock { Text = label, FontSize = 11, TextWrapping = TextWrapping.Wrap,
+                var support = new TextBlock { Text = label + "\n" + MacGameplay.Summary(compatibility), FontSize = 11, TextWrapping = TextWrapping.Wrap,
                     Foreground = this.FindResource("ThemeTextSecondary") as IBrush };
                 ToolTip.SetTip(support, compatibility == null ? "No evidence recorded." :
-                    $"{compatibility.Release}: {compatibility.AssetName}\n{compatibility.Requirements}\n{compatibility.Evidence}");
+                    $"{compatibility.Release}: {compatibility.AssetName}\n{compatibility.Requirements}\n{compatibility.Evidence}\n\n{MacGameplay.Details(compatibility)}");
                 infoStack.Children.Add(support);
             }
 
@@ -4774,7 +4888,7 @@ private Border BuildCatalogCard(CatalogEntry entry, bool alreadyAdded)
                 });
                 if (OperatingSystem.IsMacOS() && MacCompatibility.CatalogCategory(MacCompatibility.Find(entry.Repository)) == "candidate")
                     await Dispatcher.UIThread.InvokeAsync(async () =>
-                        await ConfigureGameCrossOverAsync(_gameManager.Games.FirstOrDefault(g =>
+                        await ConfigureMacLaunchAsync(_gameManager.Games.FirstOrDefault(g =>
                             string.Equals(g.Repository, entry.Repository, StringComparison.OrdinalIgnoreCase)) ?? newApp));
             }
             catch (Exception ex)
@@ -6049,6 +6163,12 @@ private Border BuildCatalogCard(CatalogEntry entry, bool alreadyAdded)
             if (game == null)
             {
                 await ShowMessageBoxAsync("Unable to identify the selected app.", "Error");
+                return;
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                await ConfigureMacLaunchAsync(game);
                 return;
             }
 

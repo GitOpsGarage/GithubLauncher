@@ -7,19 +7,31 @@ The original MIT license and project attribution are preserved.
 ## macOS support
 
 - Self-contained Apple Silicon and Intel builds using Avalonia/.NET 9.
-- Native macOS releases take priority over Windows builds.
+- Native macOS releases take priority; each game can explicitly select its Windows build.
 - A release audit covers the full bundled catalog, including Twilight Princess
   (Dusklight), Wind Waker HD, and Spider-Man: Edge of Time Recompiled.
-- Filters distinguish **Versão para Mac**, **Testado no CrossOver**,
-  **Para testar no CrossOver**, and **Sem avaliação**. Published builds are not gameplay ratings.
+- Filters distinguish **Mac build available**, **Gameplay tested**, **Windows candidates**,
+  and **Unassessed**. **Only playable results** requires documented gameplay for the release
+  and asset on the current architecture/macOS and runtime. Published builds are not gameplay ratings.
 - Native ZIP, TAR.GZ, TAR.XZ, TGZ, and DMG installation preserves complete payloads,
   including tools/SDKs stored beside an app bundle.
-- CrossOver uses existing per-game bottles, without Proton. Unverified Windows
-  builds require explicit per-game testing opt-in.
+- Windows games can use direct CrossOver bottles or Steam / NotProton shortcuts.
+  Steam receives the actual Windows executable and selected installed NotProton tool.
+  Unverified Windows builds require explicit per-game testing opt-in.
+- Record **Playable**, **Playable with adjustments**, or **Unsupported** separately
+  for native Mac, direct CrossOver, and Steam / NotProton. Updates require fresh tests.
 - Settings, library, cache, and default installs live outside the app bundle.
 
 See [MACOS.md](MACOS.md) for builds, game setup, data locations, and limitations.
 The launcher downloads and manages projects; it does not supply original game data.
+
+[NotProton](https://github.com/NotProtonNot/NotProton) enables Steam Play in the macOS
+Steam client using CrossOver. Install and configure it separately, then use
+**Configure Mac launch… → Steam / NotProton → Prepare in Steam** with Steam closed.
+The launcher backs up Steam configuration before registering the shortcut and tool.
+Gameplay reports stay local; this fork does not claim Valve certification or supply
+pre-certified Windows games. Submit reproducible reports through the fork's
+[compatibility report form](https://github.com/GitOpsGarage/GithubLauncher/issues/new?template=mac-compatibility.yml).
 
 ## Development and commits
 

@@ -48,7 +48,7 @@ for offset in range(0, len(repos), 25):
             prior["checkedAt"] = checked
             continue
         records[repo] = {"mode": "native" if mac else "candidate" if win else "unknown",
-                        "release": release["tagName"], "assetName": (mac or win or [""])[0],
+                        "release": release["tagName"], "assetName": (mac or win or [""])[0], "availableAssets": names,
                         "verified": False, "evidence": release["url"], "checkedAt": checked,
                         "requirements": prior.get("requirements") or
                         "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."}

@@ -55,7 +55,9 @@
 									   FontWeight="Bold"
 									   Foreground="{DynamicResource ThemeText}"/>
 							
-							<TextBlock Text="{Binding StatusText}"
+							<TextBlock Text="{Binding MacGameplayStatus}" IsVisible="{Binding IsMacPlatform}"
+                                       ToolTip.Tip="{Binding MacGameplayDetails}" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                            <TextBlock Text="{Binding StatusText}"
 									   FontSize="13"
 									   Foreground="{DynamicResource ThemeTextSecondary}"
 									   Margin="0,6,0,0"/>
@@ -117,8 +119,8 @@
 												  Click="LocateExistingInstall_Click"
 												  CommandParameter="{Binding}"
 												  IsVisible="{Binding CanLocateInstall}"/>
-                                        <MenuItem Header="Configurar CrossOver…"
-                                                  Click="ConfigureGameCrossOver_Click"
+                                        <MenuItem Header="Configure Mac launch…"
+                                                  Click="ConfigureMacLaunch_Click"
                                                   CommandParameter="{Binding}"
                                                   IsVisible="{Binding IsMacPlatform}"/>
 										<MenuItem Header="Update Now"
@@ -257,8 +259,8 @@
 											  Click="LocateExistingInstall_Click"
 											  CommandParameter="{Binding}"
 											  IsVisible="{Binding CanLocateInstall}"/>
-                                        <MenuItem Header="Configurar CrossOver…"
-                                                  Click="ConfigureGameCrossOver_Click"
+                                        <MenuItem Header="Configure Mac launch…"
+                                                  Click="ConfigureMacLaunch_Click"
                                                   CommandParameter="{Binding}"
                                                   IsVisible="{Binding IsMacPlatform}"/>
 									<MenuItem Header="Update Now"
@@ -379,7 +381,9 @@
 									   TextWrapping="Wrap"
 									   Margin="0,0,0,4"/>
 
-							<TextBlock Text="{Binding StatusText}"
+							<TextBlock Text="{Binding MacGameplayStatus}" IsVisible="{Binding IsMacPlatform}"
+                                       ToolTip.Tip="{Binding MacGameplayDetails}" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                            <TextBlock Text="{Binding StatusText}"
 									   FontSize="11"
 									   Foreground="{DynamicResource ThemeTextSecondary}"
 									   TextAlignment="Left"
@@ -1294,7 +1298,7 @@
                                             <TextBox Watermark="Existing CrossOver bottle name"
                                                      Text="{Binding Settings.CrossOverBottle, Mode=TwoWay}"
                                                      TextChanged="CrossOverBottle_TextChanged"/>
-                                            <TextBlock Text="A versão para Mac tem preferência. Para versões Windows, configure uma bottle e habilite o teste no menu CrossOver do jogo."
+                                            <TextBlock Text="Native Mac builds are preferred. Configure direct CrossOver or Steam / NotProton in each game’s Mac launch settings."
                                                        FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource ThemeTextSecondary}"/>
                                         </StackPanel>
 
@@ -2071,14 +2075,16 @@
 											</Grid>
 											<Border Height="1" Background="{DynamicResource ThemeBorder}" Margin="0,4,0,4"/>
                                             <WrapPanel IsVisible="{Binding IsMacPlatform}">
-                                                <CheckBox Content="Versão para Mac" Tag="native" Margin="0,0,16,0"
+                                                <CheckBox Content="Mac build available" Tag="native" Margin="0,0,16,0"
                                                           IsChecked="{Binding Settings.ShowMacNative, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
-                                                <CheckBox Content="Testado no CrossOver" Tag="tested" Margin="0,0,16,0"
+                                                <CheckBox Content="Gameplay tested" Tag="tested" Margin="0,0,16,0"
                                                           IsChecked="{Binding Settings.ShowMacTested, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
-                                                <CheckBox Content="Para testar no CrossOver" Tag="candidate"
+                                                <CheckBox Content="Windows candidates" Tag="candidate"
                                                           IsChecked="{Binding Settings.ShowMacCandidates, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
-                                                <CheckBox Content="Sem avaliação" Tag="unknown" Margin="16,0,0,0"
+                                                <CheckBox Content="Unassessed" Tag="unknown" Margin="16,0,0,0"
                                                           IsChecked="{Binding Settings.ShowMacUnknown, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
+                                                <CheckBox Content="Only playable results" Tag="confirmed" Margin="16,0,0,0"
+                                                          IsChecked="{Binding Settings.ShowMacConfirmedOnly, Mode=TwoWay}" IsCheckedChanged="MacCatalogFilter_Changed"/>
                                             </WrapPanel>
 											<TextBlock x:Name="AppCatalogStatusText"
 													   Text="Loading catalog..."

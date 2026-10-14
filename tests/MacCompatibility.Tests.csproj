@@ -10,5 +10,7 @@
     <Compile Include="../Services/MacCompatibility.cs" Link="MacCompatibility.cs" />
     <Compile Include="../Services/LauncherPaths.cs" Link="LauncherPaths.cs" />
     <Compile Include="../Services/MacGameInstaller.cs" Link="MacGameInstaller.cs" />
+    <Compile Include="../Services/MacGameplay.cs" Link="MacGameplay.cs" />
+    <Compile Include="../Services/SteamNotProton.cs" Link="SteamNotProton.cs" />
   </ItemGroup>
 </Project>

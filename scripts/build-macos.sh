@@ -8,6 +8,8 @@ task_output="$PWD/publish/$task_rid"
 task_bundle="$PWD/publish/GithubLauncher-Mac.app"
 "$DOTNET_BIN" publish GithubLauncher.csproj -c Release -r "$task_rid" --self-contained true \
     -p:PublishSingleFile=false -p:PublishTrimmed=false -o "$task_output"
+# A previous build can contain native libraries for a different architecture.
+rm -rf "$task_bundle"
 mkdir -p "$task_bundle/Contents/MacOS" "$task_bundle/Contents/Resources"
 cp -R "$task_output/" "$task_bundle/Contents/MacOS/"
 chmod +x "$task_bundle/Contents/MacOS/GithubLauncher"

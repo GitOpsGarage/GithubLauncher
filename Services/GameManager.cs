@@ -236,6 +236,12 @@ namespace GithubLauncher.Services
                         SkippedUpdateVersion = appElement.TryGetProperty("skippedUpdateVersion", out var skippedUpdateVersionElement) ? skippedUpdateVersionElement.GetString() : null,
                         CrossOverBottle = appElement.TryGetProperty("crossOverBottle", out var bottle) ? bottle.GetString() ?? "" : "",
                         AllowCrossOverTesting = appElement.TryGetProperty("allowCrossOverTesting", out var testing) && testing.ValueKind == JsonValueKind.True,
+                        MacWindowsRunner = appElement.TryGetProperty("macWindowsRunner", out var macWindowsRunner) ? macWindowsRunner.GetString() ?? "" : "crossover",
+                        SteamAccount = appElement.TryGetProperty("steamAccount", out var steamAccount) ? steamAccount.GetString() ?? "" : "",
+                        SteamTool = appElement.TryGetProperty("steamTool", out var steamTool) ? steamTool.GetString() ?? "" : "",
+                        SteamExecutable = appElement.TryGetProperty("steamExecutable", out var steamExecutable) ? steamExecutable.GetString() ?? "" : "",
+                        PreferWindowsBuild = appElement.TryGetProperty("preferWindowsBuild", out var preferWindowsBuild) && preferWindowsBuild.ValueKind == JsonValueKind.True,
+                        SteamShortcutId = appElement.TryGetProperty("steamShortcutId", out var steamId) && steamId.TryGetUInt64(out var id) ? id : 0,
                         IsExperimental = false,
                         IsCustom = true,
                         GameManager = this,
@@ -278,7 +284,13 @@ namespace GithubLauncher.Services
                 preferredVersion = app.PreferredVersion,
                 skippedUpdateVersion = app.SkippedUpdateVersion,
                 crossOverBottle = app.CrossOverBottle,
-                allowCrossOverTesting = app.AllowCrossOverTesting
+                allowCrossOverTesting = app.AllowCrossOverTesting,
+                macWindowsRunner = app.MacWindowsRunner,
+                steamAccount = app.SteamAccount,
+                steamTool = app.SteamTool,
+                steamExecutable = app.SteamExecutable,
+                preferWindowsBuild = app.PreferWindowsBuild,
+                steamShortcutId = app.SteamShortcutId
             };
         }
 

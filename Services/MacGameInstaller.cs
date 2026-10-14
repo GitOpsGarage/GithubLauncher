@@ -35,6 +35,7 @@ public static class MacGameInstaller
             // Copy the full payload: SDKs, tools, portable markers, and resources can live beside the app.
             await RunAsync("/usr/bin/ditto", source, gamePath);
             await File.WriteAllTextAsync(Path.Combine(gamePath, "version.txt"), version);
+            await File.WriteAllTextAsync(Path.Combine(gamePath, "installed-asset.txt"), assetName);
         }
         finally
         {

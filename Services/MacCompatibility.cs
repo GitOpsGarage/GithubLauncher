@@ -15,6 +15,8 @@ public sealed class MacCompatibilityEntry
     public string Requirements { get; set; } = "";
     public string Bottle { get; set; } = "";
     public DateTimeOffset CheckedAt { get; set; }
+    public List<MacGameplayReport> Reports { get; set; } = [];
+    public List<string> AvailableAssets { get; set; } = [];
 }
 
 public static class MacCompatibility
@@ -44,6 +46,19 @@ public static class MacCompatibility
                 Debug.WriteLine($"Mac compatibility catalog unavailable: {ex.Message}");
             }
         }
+        try
+        {
+            foreach (var (repository, reports) in MacGameplay.Load())
+            {
+                if (reports == null) continue;
+                if (!result.TryGetValue(repository, out var entry)) result[repository] = entry = new() { Mode = "unknown" };
+                entry.Reports ??= [];
+                entry.Reports.AddRange(reports);
+                entry.Reports = entry.Reports.DistinctBy(r => (r.Runner, r.Release, r.AssetName, r.Environment, r.RuntimeId, r.PlatformFingerprint, r.TestedAt)).ToList();
+            }
+        }
+        catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException)
+        { Debug.WriteLine($"Gameplay reports unavailable: {ex.Message}"); }
         return result;
     }
 
@@ -57,7 +72,7 @@ public static class MacCompatibility
         name.EndsWith(".tgz", StringComparison.OrdinalIgnoreCase) ||
         name.EndsWith(".dmg", StringComparison.OrdinalIgnoreCase);
 
-    public static List<GitHubAsset> FilterAssets(GitHubRelease release, MacCompatibilityEntry? entry, bool allowTesting = false)
+    public static List<GitHubAsset> FilterAssets(GitHubRelease release, MacCompatibilityEntry? entry, bool allowTesting = false, string runner = "crossover", string? runtimeId = null, bool preferWindows = false)
     {
         var assets = GitHubReleaseService.GetDownloadableAssets(release);
         var native = assets.Where(a => IsSupportedArchive(a.name) &&
@@ -72,7 +87,7 @@ public static class MacCompatibility
             System.Runtime.InteropServices.Architecture.X64)
             native.RemoveAll(a => IsArm(a.name) && !IsIntel(a.name) && !IsUniversal(a.name));
 
-        if (native.Count > 0)
+        if (native.Count > 0 && !preferWindows)
             return native.OrderBy(a => IsDebug(a.name)).ThenByDescending(a => IsArm(a.name) || IsUniversal(a.name))
                 .ThenBy(a => a.name.EndsWith(".dmg", StringComparison.OrdinalIgnoreCase)).ToList();
 
@@ -80,10 +95,7 @@ public static class MacCompatibility
             return assets.Where(a => (IsSupportedArchive(a.name) || a.name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) &&
                 PlatformAssetMatcher.MatchesPlatform(a.name, "Windows") && !IsArm(a.name)).ToList();
 
-        if (!IsVerifiedCrossOver(entry, release.tag_name))
-            return [];
-
-        return assets.Where(a => a.name == entry!.AssetName &&
+        return assets.Where(a => MacGameplay.IsVerified(entry, release.tag_name, a.name, runner, runtimeId) &&
             (IsSupportedArchive(a.name) || a.name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) &&
             PlatformAssetMatcher.IsWindowsAsset(a.name)).ToList();
     }
@@ -102,6 +114,7 @@ public static class MacCompatibility
         {
             Mode = native != null ? "native" : candidate != null ? "candidate" : "unknown",
             Release = release.tag_name, AssetName = (native ?? candidate)?.name ?? "",
+            AvailableAssets = release.assets?.Select(a => a.name).ToList() ?? [],
             Evidence = $"https://github.com/{repository}/releases/tag/{Uri.EscapeDataString(release.tag_name)}",
             CheckedAt = DateTimeOffset.UtcNow,
             Requirements = "Follow this project's setup guide and supply its required original game data. Gameplay has not been tested."
@@ -112,9 +125,7 @@ public static class MacCompatibility
         PlatformAssetMatcher.HasAnyOf(name.ToLowerInvariant(), "intel", "x64", "x86_64", "amd64");
 
     public static bool IsVerifiedCrossOver(MacCompatibilityEntry? entry, string? version) =>
-        entry is { Verified: true } && entry.Mode.Equals("crossover", StringComparison.OrdinalIgnoreCase) &&
-        !string.IsNullOrWhiteSpace(entry.Release) && entry.Release == version &&
-        !string.IsNullOrWhiteSpace(entry.AssetName) && !string.IsNullOrWhiteSpace(entry.Evidence);
+        entry != null && entry.Release == version && MacGameplay.IsVerified(entry, version, entry.AssetName, "crossover");
 
     public static bool IsCatalogEligible(MacCompatibilityEntry entry) =>
         !string.IsNullOrWhiteSpace(entry.Evidence) &&
@@ -126,7 +137,7 @@ public static class MacCompatibility
     {
         if (entry == null || string.IsNullOrWhiteSpace(entry.Evidence)) return "unknown";
         if (entry.Mode.Equals("native", StringComparison.OrdinalIgnoreCase) && IsCatalogEligible(entry)) return "native";
-        if (IsVerifiedCrossOver(entry, entry.Release)) return "tested";
+        if (MacGameplay.Current(entry).Any(r => r.IsPlayable)) return "tested";
         if ((entry.Mode.Equals("candidate", StringComparison.OrdinalIgnoreCase) || entry.Mode.Equals("crossover", StringComparison.OrdinalIgnoreCase)) &&
             !string.IsNullOrWhiteSpace(entry.Release) && PlatformAssetMatcher.MatchesPlatform(entry.AssetName, "Windows") &&
             (IsSupportedArchive(entry.AssetName) || entry.AssetName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))) return "candidate";

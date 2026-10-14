@@ -42,7 +42,32 @@ namespace GithubLauncher.Models
         public bool IsCustom { get; set; }
         public string CrossOverBottle { get; set; } = string.Empty;
         public bool AllowCrossOverTesting { get; set; }
+        public string MacWindowsRunner { get; set; } = "crossover";
+        public string SteamAccount { get; set; } = "";
+        public string SteamTool { get; set; } = "";
+        public ulong SteamShortcutId { get; set; }
+        public string SteamExecutable { get; set; } = "";
+        public bool PreferWindowsBuild { get; set; }
         public bool IsMacPlatform => OperatingSystem.IsMacOS();
+        public string MacGameplayStatus
+        {
+            get
+            {
+                var entry = MacCompatibility.Find(Repository);
+                if (entry != null && !string.IsNullOrWhiteSpace(InstalledVersion))
+                {
+                    if (entry.Release != InstalledVersion) entry.AvailableAssets = [];
+                    entry.Release = InstalledVersion;
+                }
+                return MacGameplay.Summary(entry);
+            }
+        }
+        public string MacGameplayDetails => MacGameplay.Details(MacCompatibility.Find(Repository));
+        public void RefreshMacGameplayStatus()
+        {
+            OnPropertyChanged(nameof(MacGameplayStatus));
+            OnPropertyChanged(nameof(MacGameplayDetails));
+        }
         private string? _customIconPath { get; set; }
         public string? CustomIconPath
         {
@@ -1418,7 +1443,8 @@ namespace GithubLauncher.Models
         public List<GitHubAsset> GetDownloadableAssets(GitHubRelease release)
         {
             if (OperatingSystem.IsMacOS())
-                return MacCompatibility.FilterAssets(release, MacCompatibility.Find(Repository), AllowCrossOverTesting);
+                return MacCompatibility.FilterAssets(release, MacCompatibility.Find(Repository), AllowCrossOverTesting, MacWindowsRunner,
+                    MacGameplay.RuntimeIdentity(MacWindowsRunner, SteamTool, AppSettings.Load().CrossOverAppPath), PreferWindowsBuild);
             return GitHubReleaseService.GetDownloadableAssets(release);
         }
         private async Task DownloadAndInstallAsync(HttpClient httpClient, string gamesFolder, GitHubRelease? latestRelease, AppSettings settings, GameStatus status)
@@ -1489,7 +1515,7 @@ namespace GithubLauncher.Models
                     latestRelease = (await FetchReleasesAsync(httpClient).ConfigureAwait(false)).FirstOrDefault();
                     if (latestRelease == null)
                     {
-                        await ShowMessageBoxAsync($"Nenhuma release instalável para Mac/CrossOver foi encontrada para {Name}.", "No Compatible Release");
+                        await ShowMessageBoxAsync($"No installable Mac/Windows release was found for {Name}.", "No Compatible Release");
                         Status = GameStatus.NotInstalled;
                         DownloadProgress = 0;
                         return;
@@ -1518,7 +1544,7 @@ namespace GithubLauncher.Models
                 if (availableAssets.Count == 0)
                 {
                     await ShowMessageBoxAsync(OperatingSystem.IsMacOS()
-                        ? $"Nenhum arquivo instalável para Mac/CrossOver nesta versão de {Name}. Para experimentar uma versão Windows, habilite o teste na configuração CrossOver deste jogo."
+                        ? $"No installable Mac/Windows asset was found in this release of {Name}. To try a Windows build, enable testing in this game’s Mac launch settings."
                         : $"No download files found for {Name}.", "No Assets");
                     Status = GameStatus.NotInstalled;
                     DownloadProgress = 0;
@@ -2007,6 +2033,19 @@ namespace GithubLauncher.Models
                         out needsWine);
                 }
 
+                if (OperatingSystem.IsMacOS() && PreferWindowsBuild)
+                {
+                    executables = Directory.GetFiles(gamePath, "*", SearchOption.AllDirectories)
+                        .Where(p => p.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)).ToList();
+                    needsWine = true;
+                }
+                if (OperatingSystem.IsMacOS() && needsWine && MacWindowsRunner == "notproton" &&
+                    File.Exists(SteamExecutable) && executables.Contains(SteamExecutable))
+                {
+                    executables = [SteamExecutable];
+                    SelectedExecutable = SteamExecutable;
+                }
+
                 if (executables.Count == 0)
                 {
                     await ShowMessageBoxAsync(
@@ -2074,15 +2113,27 @@ namespace GithubLauncher.Models
                     var compatibility = MacCompatibility.Find(Repository);
                     var version = File.Exists(Path.Combine(gamePath, "version.txt"))
                         ? File.ReadAllText(Path.Combine(gamePath, "version.txt")).Trim() : null;
-                    if (!AllowCrossOverTesting && !MacCompatibility.IsVerifiedCrossOver(compatibility, version))
+                    var asset = File.Exists(Path.Combine(gamePath, "installed-asset.txt"))
+                        ? File.ReadAllText(Path.Combine(gamePath, "installed-asset.txt")).Trim() : null;
+                    if (!AllowCrossOverTesting && !MacGameplay.IsVerified(compatibility, version, asset, MacWindowsRunner,
+                        MacGameplay.RuntimeIdentity(MacWindowsRunner, SteamTool, settings.CrossOverAppPath)))
                     {
-                        await ShowMessageBoxAsync("This Windows build is not tested in CrossOver. Open this game's CrossOver configuration to enable testing, or choose a documented tested build.", "CrossOver Compatibility");
+                        await ShowMessageBoxAsync("This Windows release has no playable report for the selected launch method. Enable testing in Mac launch settings or choose a documented playable release.", "Mac compatibility");
                         return;
                     }
-                    var bottle = !string.IsNullOrWhiteSpace(CrossOverBottle) ? CrossOverBottle :
-                        !string.IsNullOrWhiteSpace(compatibility?.Bottle) ? compatibility.Bottle : settings.CrossOverBottle;
-                    startInfo = MacCompatibility.CrossOverStartInfo(settings.CrossOverAppPath, bottle,
-                        executablePath, gamePath);
+                    if (MacWindowsRunner == "notproton")
+                    {
+                        if (SteamExecutable != executablePath)
+                            throw new InvalidOperationException("Prepare a Steam / NotProton shortcut for the selected executable in this game’s Mac launch settings.");
+                        startInfo = SteamNotProton.LaunchInfo(SteamShortcutId, executablePath, Name!, SteamTool, SteamAccount);
+                    }
+                    else
+                    {
+                        var bottle = !string.IsNullOrWhiteSpace(CrossOverBottle) ? CrossOverBottle :
+                            !string.IsNullOrWhiteSpace(compatibility?.Bottle) ? compatibility.Bottle : settings.CrossOverBottle;
+                        startInfo = MacCompatibility.CrossOverStartInfo(settings.CrossOverAppPath, bottle,
+                            executablePath, gamePath);
+                    }
                 }
                 else if (needsWine && RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {

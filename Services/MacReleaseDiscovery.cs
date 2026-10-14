@@ -62,8 +62,8 @@ public static class MacReleaseDiscovery
             var temporary = path + ".tmp";
             await File.WriteAllTextAsync(temporary, JsonSerializer.Serialize(evidence, new JsonSerializerOptions { WriteIndented = true }));
             File.Move(temporary, path, true);
-            return limited ? "Limite GitHub atingido; avaliação restante pendente. Dados já conhecidos foram preservados." :
-                checkedCount > 0 ? $"Releases atualizadas: {checkedCount}." : "Avaliação de releases em cache (24 horas).";
+            return limited ? "GitHub rate limit reached; remaining release checks are pending. Existing evidence was preserved." :
+                checkedCount > 0 ? $"Releases refreshed: {checkedCount}." : "Release evidence cached for 24 hours.";
         }
         finally { RefreshLock.Release(); }
     }

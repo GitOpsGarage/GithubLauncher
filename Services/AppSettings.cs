@@ -36,6 +36,7 @@ namespace GithubLauncher
         public string LinuxWindowsLaunchCommand { get; set; } = string.Empty;
         public string CrossOverAppPath { get; set; } = "/Applications/CrossOver.app";
         public string CrossOverBottle { get; set; } = string.Empty;
+        public bool ShowMacConfirmedOnly { get; set; }
         public bool ShowMacNative { get; set; } = true;
         public bool ShowMacTested { get; set; } = true;
         public bool ShowMacCandidates { get; set; } = false;
