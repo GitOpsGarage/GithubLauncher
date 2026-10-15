@@ -4,7 +4,7 @@
         xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
         xmlns:local="clr-namespace:GithubLauncher"
 		xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
-        Title="Github Launcher"
+        Title="GitHub Launcher Mac — GitOpsGarage"
 		Width="1280" Height="720"
 		MinWidth="750" MinHeight="490"
         Background="{Binding WindowBackground}"
@@ -55,7 +55,13 @@
 									   FontWeight="Bold"
 									   Foreground="{DynamicResource ThemeText}"/>
 							
-							<TextBlock Text="{Binding StatusText}"
+							<TextBlock Text="{Binding MacGameplayStatus}" IsVisible="{Binding IsMacPlatform}"
+                                       ToolTip.Tip="{Binding MacGameplayDetails}" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                            <TextBlock Text="{Binding GameDataSummary}" IsVisible="{Binding IsMacPlatform}"
+                                       TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                            <Button Content="ROM / disc requirements…" IsVisible="{Binding IsMacPlatform}"
+                                    Click="GameDataRequirements_Click" Tag="{Binding}" FontSize="11" Margin="0,4,0,4"/>
+                            <TextBlock Text="{Binding StatusText}"
 									   FontSize="13"
 									   Foreground="{DynamicResource ThemeTextSecondary}"
 									   Margin="0,6,0,0"/>
@@ -117,6 +123,10 @@
 												  Click="LocateExistingInstall_Click"
 												  CommandParameter="{Binding}"
 												  IsVisible="{Binding CanLocateInstall}"/>
+                                        <MenuItem Header="Configure Mac launch…"
+                                                  Click="ConfigureMacLaunch_Click"
+                                                  CommandParameter="{Binding}"
+                                                  IsVisible="{Binding IsMacPlatform}"/>
 										<MenuItem Header="Update Now"
 												  Click="UpdateNowMenu_Click"
 												  CommandParameter="{Binding}"
@@ -253,6 +263,10 @@
 											  Click="LocateExistingInstall_Click"
 											  CommandParameter="{Binding}"
 											  IsVisible="{Binding CanLocateInstall}"/>
+                                        <MenuItem Header="Configure Mac launch…"
+                                                  Click="ConfigureMacLaunch_Click"
+                                                  CommandParameter="{Binding}"
+                                                  IsVisible="{Binding IsMacPlatform}"/>
 									<MenuItem Header="Update Now"
 											  Click="UpdateNowMenu_Click"
 											  CommandParameter="{Binding}"
@@ -371,7 +385,13 @@
 									   TextWrapping="Wrap"
 									   Margin="0,0,0,4"/>
 
-							<TextBlock Text="{Binding StatusText}"
+							<TextBlock Text="{Binding MacGameplayStatus}" IsVisible="{Binding IsMacPlatform}"
+                                       ToolTip.Tip="{Binding MacGameplayDetails}" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                            <TextBlock Text="{Binding GameDataSummary}" IsVisible="{Binding IsMacPlatform}"
+                                       TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                            <Button Content="ROM / disc requirements…" IsVisible="{Binding IsMacPlatform}"
+                                    Click="GameDataRequirements_Click" Tag="{Binding}" FontSize="11" Margin="0,4,0,4"/>
+                            <TextBlock Text="{Binding StatusText}"
 									   FontSize="11"
 									   Foreground="{DynamicResource ThemeTextSecondary}"
 									   TextAlignment="Left"
@@ -1277,6 +1297,19 @@
 												Click="ClearIconCache_Click"
 												FontSize="12"/>
 
+                                        <StackPanel Spacing="6" IsVisible="{Binding IsMacPlatform}">
+                                            <TextBlock Text="CROSSOVER" FontSize="10" FontWeight="Bold"
+                                                       Foreground="{DynamicResource ThemeTextSecondary}" Margin="0,8,0,4"/>
+                                            <TextBox Watermark="/Applications/CrossOver.app"
+                                                     Text="{Binding Settings.CrossOverAppPath, Mode=TwoWay}"
+                                                     TextChanged="CrossOverPath_TextChanged"/>
+                                            <TextBox Watermark="Existing CrossOver bottle name"
+                                                     Text="{Binding Settings.CrossOverBottle, Mode=TwoWay}"
+                                                     TextChanged="CrossOverBottle_TextChanged"/>
+                                            <TextBlock Text="Native Mac builds are preferred. Configure direct CrossOver or Steam / NotProton in each game’s Mac launch settings."
+                                                       FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                                        </StackPanel>
+
 										<StackPanel Spacing="2" IsVisible="{Binding IsLinuxPlatform}">
 											<TextBlock Text="LINUX WINDOWS RUNNER"
 													   FontSize="10" FontWeight="Bold"
@@ -2049,6 +2082,21 @@
 														Click="RefreshAppCatalog_Click"/>
 											</Grid>
 											<Border Height="1" Background="{DynamicResource ThemeBorder}" Margin="0,4,0,4"/>
+                                            <StackPanel IsVisible="{Binding IsMacPlatform}" Spacing="8" Margin="0,8,0,4">
+                                                <TextBlock Text="Browse games" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource ThemeTextSecondary}"/>
+                                                <ComboBox SelectedIndex="{Binding MacCatalogFilterIndex, Mode=TwoWay}"
+                                                          HorizontalAlignment="Left" MinWidth="340"
+                                                          AutomationProperties.Name="Game compatibility filter">
+                                                    <ComboBoxItem Content="All games"/>
+                                                    <ComboBoxItem Content="Native Mac builds"/>
+                                                    <ComboBoxItem Content="Windows — confirmed playable on Mac"/>
+                                                    <ComboBoxItem Content="Other games — try on this Mac"/>
+                                                </ComboBox>
+                                                <TextBlock Text="{Binding MacCatalogFilterDescription}" FontSize="12"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="{DynamicResource ThemeTextSecondary}"/>
+                                            </StackPanel>
 											<TextBlock x:Name="AppCatalogStatusText"
 													   Text="Loading catalog..."
 													   FontSize="12"

@@ -1,4 +1,57 @@
-# Github Launcher
+# GitHub Launcher Mac — GitOpsGarage
+
+A maintained macOS fork of [SirDiabo/GithubLauncher](https://github.com/SirDiabo/GithubLauncher).
+This fork is maintained by GitOpsGarage; it is not an upstream-endorsed release.
+The original MIT license and project attribution are preserved.
+
+## macOS support
+
+- Self-contained Apple Silicon and Intel builds using Avalonia/.NET 9.
+- Native macOS releases take priority; each game can explicitly select its Windows build.
+- A release audit covers the full bundled catalog, including Twilight Princess
+  (Dusklight), Wind Waker HD, and Spider-Man: Edge of Time Recompiled.
+- One catalog selector offers **All games** (default), **Native Mac builds**,
+  **Windows — confirmed playable on Mac**, and **Other games — try on this Mac**.
+  Windows confirmation requires a current gameplay report; unverified projects remain selectable.
+- Native ZIP, TAR.GZ, TAR.XZ, TGZ, and DMG installation preserves complete payloads,
+  including tools/SDKs stored beside an app bundle.
+- New Windows games default to Steam / NotProton; each game can switch to direct CrossOver.
+  Steam receives the actual Windows executable and selected installed NotProton tool.
+  Unverified Windows builds require explicit per-game testing opt-in.
+- Record **Playable**, **Playable with adjustments**, or **Unsupported** separately
+  for native Mac, direct CrossOver, and Steam / NotProton. Updates require fresh tests.
+- Settings, library, cache, and default installs live outside the app bundle.
+
+See [MACOS.md](MACOS.md) for builds, game setup, data locations, and limitations.
+The launcher downloads and manages projects; it does not supply original game data.
+
+[NotProton](https://github.com/NotProtonNot/NotProton) enables Steam Play in the macOS
+Steam client using CrossOver. Install and configure it separately, then use
+**Configure Mac launch… → Steam / NotProton → Prepare in Steam** with Steam closed.
+The launcher backs up Steam configuration before registering the shortcut and tool.
+Gameplay reports stay local; this fork does not claim Valve certification or supply
+pre-certified Windows games. Submit reproducible reports through the fork's
+[compatibility report form](https://github.com/GitOpsGarage/GithubLauncher-macOS/issues/new?template=mac-compatibility.yml).
+
+## Development and commits
+
+```sh
+git clone --recurse-submodules https://github.com/GitOpsGarage/GithubLauncher-macOS.git
+cd GithubLauncher-macOS
+bundle install
+bundle exec overcommit --install
+bundle exec overcommit --sign
+bundle exec overcommit --sign pre-commit
+bash scripts/check.sh
+bash scripts/build-macos.sh osx-arm64
+```
+
+Every commit must pass Overcommit. Do not bypass hooks. CI also runs the same checks
+before producing Mac artifacts. Run `python3 scripts/audit-mac-catalog.py` with an
+authenticated GitHub CLI to refresh bundled release evidence. GitHub API discovery
+in the app preserves cached results when offline or rate limited.
+
+## Original project documentation
 
 [![.NET 9](https://img.shields.io/badge/.NET-9-512BD4)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/github/license/SirDiabo/GithubLauncher)](https://github.com/SirDiabo/GithubLauncher/blob/main/LICENSE)
@@ -31,7 +84,7 @@ A modern, user-friendly launcher application for managing and running GitHub-hos
 
 ### Installation
 
-1. Download the latest release from the [Releases](https://github.com/SirDiabo/GithubLauncher/releases) page
+1. Download the latest release from the [Releases](https://github.com/GitOpsGarage/GithubLauncher-macOS/releases) page
 2. Extract the downloaded archive to your preferred location
 3. Run the executable.
 
@@ -87,5 +140,5 @@ Each app entry requires the following properties:
 ## Support
 
 If you encounter any issues or have questions:
-- [Open an issue](https://github.com/SirDiabo/GithubLauncher/issues)
+- [Open an issue](https://github.com/GitOpsGarage/GithubLauncher-macOS/issues)
 - Check existing issues for solutions

@@ -82,70 +82,36 @@ jobs:
 
   build-macos:
     runs-on: macos-latest
-    
-    env:
-      Solution_Name: GithubLauncher.sln
-      App_Name: GithubLauncher
-
+    strategy:
+      matrix:
+        runtime: [osx-arm64, osx-x64]
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        submodules: recursive
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0.x
-
-    - name: Restore dependencies
-      run: dotnet restore GithubLauncher.sln
-
-    - name: Publish macOS x64
-      run: dotnet publish GithubLauncher.csproj -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false -o publish/osx-x64
-
-    - name: Create macOS .app bundle
-      run: |
-        APP_BUNDLE="publish/${{ env.App_Name }}.app"
-        mkdir -p "$APP_BUNDLE/Contents/MacOS"
-        mkdir -p "$APP_BUNDLE/Contents/Resources"
-        
-        # Copy all published files to the app bundle
-        cp -r publish/osx-x64/* "$APP_BUNDLE/Contents/MacOS/"
-        
-        # Make the executable... executable
-        chmod +x "$APP_BUNDLE/Contents/MacOS/${{ env.App_Name }}"
-        
-        # Create Info.plist
-        cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>CFBundleExecutable</key>
-            <string>${{ env.App_Name }}</string>
-            <key>CFBundleIdentifier</key>
-            <string>com.sirdiabo.githublauncher</string>
-            <key>CFBundleName</key>
-            <string>${{ env.App_Name }}</string>
-            <key>CFBundleVersion</key>
-            <string>1.0.0</string>
-            <key>CFBundleShortVersionString</key>
-            <string>1.0.0</string>
-            <key>CFBundlePackageType</key>
-            <string>APPL</string>
-            <key>LSMinimumSystemVersion</key>
-            <string>10.15</string>
-            <key>NSHighResolutionCapable</key>
-            <true/>
-        </dict>
-        </plist>
-        EOF
-
-    - name: Upload macOS x64
-      uses: actions/upload-artifact@v4
-      with:
-        name: GithubLauncher-macOS-x64
-        path: publish/${{ env.App_Name }}.app
-        retention-days: 14
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Install native controller library
+        run: brew install sdl2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Validate through Overcommit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          bundle exec overcommit --install
+          bundle exec overcommit --sign
+          bundle exec overcommit --sign pre-commit
+          bundle exec overcommit --run
+      - name: Build macOS app
+        run: bash scripts/build-macos.sh ${{ matrix.runtime }}
+      - name: Preserve app bundle metadata
+        run: ditto -c -k --sequesterRsrc --keepParent publish/GithubLauncher-Mac.app publish/GithubLauncher-${{ matrix.runtime }}.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GithubLauncher-${{ matrix.runtime }}
+          path: publish/GithubLauncher-${{ matrix.runtime }}.zip
+          retention-days: 14

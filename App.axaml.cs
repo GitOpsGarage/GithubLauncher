@@ -130,7 +130,7 @@ public class App : Application, INotifyPropertyChanged
 
     private static bool _hasCheckedForAppUpdates = false;
     private static readonly object _updateLock = new object();
-    private const string Repository = "SirDiabo/GithubLauncher";
+    private const string Repository = "GitOpsGarage/GithubLauncher-macOS";
     private const string VersionFileName = "version.txt";
     private const string UpdateCheckFileName = "update_check.json";
     private const string BackupDirectoryPrefix = "backup_";
@@ -208,6 +208,10 @@ public class App : Application, INotifyPropertyChanged
 
     private async Task CheckForUpdatesAndApplyAsync(bool isManualCheck = false)
     {
+        // Upstream updates would replace this local macOS/CrossOver adaptation.
+        if (!AppSettings.Load().EnableLauncherSelfUpdates)
+            return;
+
         string currentAppDirectory = AppDomain.CurrentDomain.BaseDirectory;
         string updateCheckFilePath = Path.Combine(currentAppDirectory, UpdateCheckFileName);
 

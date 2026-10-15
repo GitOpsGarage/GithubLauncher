@@ -24,6 +24,7 @@ namespace GithubLauncher.Models
     {
         private const string DefaultInstalledVersion = "v0.0.0";
         public event Action<Process?>? GameProcessStarted;
+        public Func<GameInfo, string, Task>? MacLaunchSetupRequested { get; set; }
         private string? _latestVersion;
         private string? _installedVersion;
         private string? _preferredVersion;
@@ -40,6 +41,38 @@ namespace GithubLauncher.Models
         public string? GameIconUrl { get; set; }
         public bool IsExperimental { get; set; }
         public bool IsCustom { get; set; }
+        public string CrossOverBottle { get; set; } = string.Empty;
+        public bool AllowCrossOverTesting { get; set; }
+        public string MacWindowsRunner { get; set; } = "notproton";
+        public string SteamAccount { get; set; } = "";
+        public string SteamTool { get; set; } = "";
+        public ulong SteamShortcutId { get; set; }
+        public string SteamExecutable { get; set; } = "";
+        public bool PreferWindowsBuild { get; set; }
+        public bool IsMacPlatform => OperatingSystem.IsMacOS();
+        public string MacGameplayStatus
+        {
+            get
+            {
+                var entry = MacCompatibility.Find(Repository);
+                if (entry != null && !string.IsNullOrWhiteSpace(InstalledVersion))
+                {
+                    if (entry.Release != InstalledVersion) entry.AvailableAssets = [];
+                    entry.Release = InstalledVersion;
+                }
+                return MacGameplay.Summary(entry);
+            }
+        }
+        public string GameDataSummary => GameDataRequirements.Find(Repository).Summary;
+        public string NoReleaseMessage => OperatingSystem.IsMacOS()
+            ? GameDataRequirements.NoReleaseMessage(Name, PreferWindowsBuild, AllowCrossOverTesting)
+            : $"No downloadable releases were found for {Name}.";
+        public string MacGameplayDetails => MacGameplay.Details(MacCompatibility.Find(Repository));
+        public void RefreshMacGameplayStatus()
+        {
+            OnPropertyChanged(nameof(MacGameplayStatus));
+            OnPropertyChanged(nameof(MacGameplayDetails));
+        }
         private string? _customIconPath { get; set; }
         public string? CustomIconPath
         {
@@ -161,17 +194,15 @@ namespace GithubLauncher.Models
                     if (!Directory.Exists(gamePath))
                         return false;
 
-                    var executables = GameInstallationService.FindExecutableCandidates(
+                    var executables = GetExecutableCandidates(
                         gamePath,
                         SearchOption.TopDirectoryOnly,
-                        GetInstallationOptions(),
                         out _);
                     if (executables.Count <= 1)
                     {
-                        executables = GameInstallationService.FindExecutableCandidates(
+                        executables = GetExecutableCandidates(
                             gamePath,
                             SearchOption.AllDirectories,
-                            GetInstallationOptions(),
                             out _);
                     }
 
@@ -1217,7 +1248,8 @@ namespace GithubLauncher.Models
                     return;
                 }
 
-                var latestRelease = result.Releases.FirstOrDefault();
+                var latestRelease = result.Releases.FirstOrDefault(release =>
+                    !OperatingSystem.IsMacOS() || GetDownloadableAssets(release).Count > 0);
                 if (latestRelease != null && !string.IsNullOrWhiteSpace(latestRelease.tag_name))
                 {
                     LatestVersion = latestRelease.tag_name;
@@ -1396,15 +1428,17 @@ namespace GithubLauncher.Models
             return _cachedRelease;
         }
 
+        public async Task<List<GitHubRelease>> FetchPublishedReleasesAsync(HttpClient httpClient)
+        {
+            if (string.IsNullOrWhiteSpace(Repository)) return [];
+            return await GitHubReleaseService.FetchReleasesWithAssetsAsync(
+                httpClient, Repository, GetGitHubApiToken()).ConfigureAwait(false);
+        }
+
         public async Task<List<GitHubRelease>> FetchReleasesAsync(HttpClient httpClient)
         {
-            if (string.IsNullOrWhiteSpace(Repository))
-                return [];
-
-            return await GitHubReleaseService.FetchReleasesWithAssetsAsync(
-                httpClient,
-                Repository,
-                GetGitHubApiToken()).ConfigureAwait(false);
+            var releases = await FetchPublishedReleasesAsync(httpClient).ConfigureAwait(false);
+            return OperatingSystem.IsMacOS() ? releases.Where(release => GetDownloadableAssets(release).Count > 0).ToList() : releases;
         }
         public async Task InstallReleaseAsync(HttpClient httpClient, string gamesFolder, AppSettings settings, GitHubRelease release, GitHubAsset selectedAsset)
         {
@@ -1412,8 +1446,11 @@ namespace GithubLauncher.Models
             await DownloadAndInstallAsync(httpClient, gamesFolder, release, settings, Status);
         }
 
-        private static List<GitHubAsset> GetDownloadableAssets(GitHubRelease release)
+        public List<GitHubAsset> GetDownloadableAssets(GitHubRelease release)
         {
+            if (OperatingSystem.IsMacOS())
+                return MacCompatibility.FilterAssets(release, MacCompatibility.Find(Repository), AllowCrossOverTesting, MacWindowsRunner,
+                    MacGameplay.RuntimeIdentity(MacWindowsRunner, SteamTool, AppSettings.Load().CrossOverAppPath), PreferWindowsBuild, nativeOnly: !PreferWindowsBuild);
             return GitHubReleaseService.GetDownloadableAssets(release);
         }
         private async Task DownloadAndInstallAsync(HttpClient httpClient, string gamesFolder, GitHubRelease? latestRelease, AppSettings settings, GameStatus status)
@@ -1440,7 +1477,8 @@ namespace GithubLauncher.Models
                 var gamePath = GetInstallPath(gamesFolder);
                 var versionFile = Path.Combine(gamePath, "version.txt");
 
-                // Check for a cached release first
+                // Check for a cached release first.
+                bool automaticRelease = latestRelease == null;
                 if (latestRelease == null)
                 {
                     if (GitHubApiCache.TryGetCachedVersion(Repository, out var cache) && cache?.CachedRelease != null)
@@ -1463,7 +1501,8 @@ namespace GithubLauncher.Models
                             return;
                         }
 
-                        latestRelease = releaseResult.Releases.FirstOrDefault();
+                        latestRelease = releaseResult.Releases.FirstOrDefault(release =>
+                            !OperatingSystem.IsMacOS() || GetDownloadableAssets(release).Count > 0);
 
                         if (latestRelease == null)
                         {
@@ -1474,6 +1513,18 @@ namespace GithubLauncher.Models
                         }
 
                         GitHubApiCache.SetCache(Repository, latestRelease.tag_name, releaseResult.ETag ?? string.Empty, latestRelease);
+                    }
+                }
+
+                if (automaticRelease && OperatingSystem.IsMacOS() && GetDownloadableAssets(latestRelease).Count == 0)
+                {
+                    latestRelease = (await FetchReleasesAsync(httpClient).ConfigureAwait(false)).FirstOrDefault();
+                    if (latestRelease == null)
+                    {
+                        await ShowMessageBoxAsync(NoReleaseMessage, "No Compatible Release");
+                        Status = GameStatus.NotInstalled;
+                        DownloadProgress = 0;
+                        return;
                     }
                 }
 
@@ -1498,7 +1549,9 @@ namespace GithubLauncher.Models
 
                 if (availableAssets.Count == 0)
                 {
-                    await ShowMessageBoxAsync($"No download files found for {Name}.", "No Assets");
+                    await ShowMessageBoxAsync(OperatingSystem.IsMacOS()
+                        ? NoReleaseMessage
+                        : $"No download files found for {Name}.", "No Assets");
                     Status = GameStatus.NotInstalled;
                     DownloadProgress = 0;
                     return;
@@ -1521,7 +1574,7 @@ namespace GithubLauncher.Models
                 }
 
                 // Use selected download or default to first one
-                asset = SelectedDownload ?? availableAssets[0];
+                asset = availableAssets.FirstOrDefault(a => a.name == SelectedDownload?.name) ?? availableAssets[0];
 
                 // Check if Wine/Proton is needed on Linux
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -1863,6 +1916,11 @@ namespace GithubLauncher.Models
 
         static async Task InstallOrUpdateGame(string downloadPath, string gamePath, string assetName, string version)
         {
+            if (OperatingSystem.IsMacOS())
+            {
+                await MacGameInstaller.InstallAsync(downloadPath, gamePath, assetName, version).ConfigureAwait(false);
+                return;
+            }
             await GameInstallationService.InstallOrUpdateGameAsync(
                 downloadPath,
                 gamePath,
@@ -1886,6 +1944,8 @@ namespace GithubLauncher.Models
 
         internal static List<string> GetExecutableCandidates(string gamePath, SearchOption searchOption, out bool needsWine)
         {
+            if (OperatingSystem.IsMacOS())
+                return MacCompatibility.FindExecutables(gamePath, searchOption, out needsWine);
             return GameInstallationService.FindExecutableCandidates(
                 gamePath,
                 searchOption,
@@ -1966,19 +2026,35 @@ namespace GithubLauncher.Models
                 GameInstallationService.EnsureExecutableAtRoot(gamePath, GetInstallationOptions());
 
                 // Find all available executables
-                var executables = GameInstallationService.FindExecutableCandidates(
+                var executables = GetExecutableCandidates(
                     gamePath,
                     SearchOption.TopDirectoryOnly,
-                    GetInstallationOptions(),
                     out bool needsWine);
 
                 if (executables.Count == 0)
                 {
-                    executables = GameInstallationService.FindExecutableCandidates(
+                    executables = GetExecutableCandidates(
                         gamePath,
                         SearchOption.AllDirectories,
-                        GetInstallationOptions(),
                         out needsWine);
+                }
+
+                if (OperatingSystem.IsMacOS() && PreferWindowsBuild)
+                {
+                    executables = Directory.GetFiles(gamePath, "*", SearchOption.AllDirectories)
+                        .Where(p => p.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)).ToList();
+                    needsWine = true;
+                }
+                if (OperatingSystem.IsMacOS() && !PreferWindowsBuild && needsWine)
+                {
+                    await ShowMessageBoxAsync("This game is set to the Mac version, but only a Windows executable is installed. Open Configure Mac launch… to see available releases and configure a Windows runner.", "Choose game version");
+                    return;
+                }
+                if (OperatingSystem.IsMacOS() && needsWine && MacWindowsRunner == "notproton" &&
+                    File.Exists(SteamExecutable) && executables.Contains(SteamExecutable))
+                {
+                    executables = [SteamExecutable];
+                    SelectedExecutable = SteamExecutable;
                 }
 
                 if (executables.Count == 0)
@@ -1991,7 +2067,7 @@ namespace GithubLauncher.Models
 
                 var settings = AppSettings.Load();
 
-                if (needsWine && !IsWindowsRunnerAvailable(settings))
+                if (needsWine && !OperatingSystem.IsMacOS() && !IsWindowsRunnerAvailable(settings))
                 {
                     await ShowMessageBoxAsync(
                         "Only a Windows executable was found, but no Linux Windows-runner is configured or detected.\n\n" +
@@ -2043,6 +2119,41 @@ namespace GithubLauncher.Models
                     startInfo.UseShellExecute = false;
                     startInfo.WorkingDirectory = gamePath;
                 }
+                else if (needsWine && OperatingSystem.IsMacOS())
+                {
+                    var compatibility = MacCompatibility.Find(Repository);
+                    var version = File.Exists(Path.Combine(gamePath, "version.txt"))
+                        ? File.ReadAllText(Path.Combine(gamePath, "version.txt")).Trim() : null;
+                    var asset = File.Exists(Path.Combine(gamePath, "installed-asset.txt"))
+                        ? File.ReadAllText(Path.Combine(gamePath, "installed-asset.txt")).Trim() : null;
+                    if (!AllowCrossOverTesting && !MacGameplay.IsVerified(compatibility, version, asset, MacWindowsRunner,
+                        MacGameplay.RuntimeIdentity(MacWindowsRunner, SteamTool, settings.CrossOverAppPath)))
+                    {
+                        await ShowMessageBoxAsync("This Windows release has no playable report for the selected launch method. Enable testing in Mac launch settings or choose a documented playable release.", "Mac compatibility");
+                        return;
+                    }
+                    if (MacWindowsRunner == "notproton")
+                    {
+                        try
+                        {
+                            if (!SteamNotProton.MatchesPreparedExecutable(SteamShortcutId, SteamExecutable, executablePath, Name!))
+                                throw new InvalidOperationException("The Windows game is downloaded, but its Steam / NotProton shortcut is not prepared for this executable. Close Steam, then click Prepare Steam shortcut below. Saving download settings does not prepare the shortcut.");
+                            startInfo = SteamNotProton.LaunchInfo(SteamShortcutId, executablePath, Name!, SteamTool, SteamAccount);
+                        }
+                        catch (Exception ex) when ((ex is InvalidOperationException or IOException) && MacLaunchSetupRequested != null)
+                        {
+                            await MacLaunchSetupRequested(this, ex.Message);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        var bottle = !string.IsNullOrWhiteSpace(CrossOverBottle) ? CrossOverBottle :
+                            !string.IsNullOrWhiteSpace(compatibility?.Bottle) ? compatibility.Bottle : settings.CrossOverBottle;
+                        startInfo = MacCompatibility.CrossOverStartInfo(settings.CrossOverAppPath, bottle,
+                            executablePath, gamePath);
+                    }
+                }
                 else if (needsWine && RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
                     var runnerCommand = GetWindowsRunnerCommand(settings, executablePath, gamePath);
@@ -2077,7 +2188,9 @@ namespace GithubLauncher.Models
                     ? gamePath
                     : (Path.GetDirectoryName(executablePath) ?? gamePath));
 
-                var gameProcess = Process.Start(startInfo);
+                var gameProcess = OperatingSystem.IsMacOS()
+                    ? await MacLaunchDiagnostics.StartAsync(startInfo)
+                    : Process.Start(startInfo);
                 GameProcessStarted?.Invoke(gameProcess);
 
                 if (GameManager != null && Application.Current != null)
