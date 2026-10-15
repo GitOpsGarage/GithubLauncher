@@ -44,6 +44,11 @@ public static class SteamNotProton
         return ((ulong)(~crc | 0x80000000u) << 32) | 0x02000000ul;
     }
 
+    public static bool MatchesPreparedExecutable(ulong id, string preparedExecutable, string selectedExecutable, string name) =>
+        id != 0 && !string.IsNullOrWhiteSpace(preparedExecutable) &&
+        string.Equals(preparedExecutable, selectedExecutable, StringComparison.Ordinal) &&
+        id == GameId(selectedExecutable, name);
+
     public static ulong Register(string name, string executable, string tool, string account, string? root = null)
     {
         if (IsSteamRunning()) throw new InvalidOperationException("Close Steam before preparing the shortcut, then reopen it.");

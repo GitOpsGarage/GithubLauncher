@@ -36,11 +36,7 @@ namespace GithubLauncher
         public string LinuxWindowsLaunchCommand { get; set; } = string.Empty;
         public string CrossOverAppPath { get; set; } = "/Applications/CrossOver.app";
         public string CrossOverBottle { get; set; } = string.Empty;
-        public bool ShowMacConfirmedOnly { get; set; }
-        public bool ShowMacNative { get; set; } = true;
-        public bool ShowMacTested { get; set; } = true;
-        public bool ShowMacCandidates { get; set; } = false;
-        public bool ShowMacUnknown { get; set; } = false;
+        public MacCatalogFilter CatalogFilter { get; set; } = MacCatalogFilter.All;
         public bool EnableLauncherSelfUpdates { get; set; } = !OperatingSystem.IsMacOS();
         public string AppListRepository { get; set; } = "SirDiabo/GHLAppList";
         public string AppListCachedVersion { get; set; } = string.Empty;

@@ -29,12 +29,54 @@ approved.Reports[0].Evidence = "Gameplay fixture report";
 Check(MacCompatibility.CatalogCategory(approved) == "tested", "Verified records are classified as tested.");
 var candidate = new MacCompatibilityEntry { Mode = "candidate", Release = "v1", AssetName = "game-Windows.zip", Evidence = "official release" };
 Check(MacCompatibility.CatalogCategory(candidate) == "candidate", "Published Windows builds are candidates, not tested.");
+Check(MacCompatibility.MatchesCatalogFilter(null, MacCatalogFilter.All) &&
+    MacCompatibility.MatchesCatalogFilter(candidate, MacCatalogFilter.All),
+    "All games must include both unassessed projects and Windows candidates.");
+Check(MacCompatibility.BrowseCategory(candidate) == MacCatalogFilter.Other &&
+    !MacCompatibility.MatchesCatalogFilter(candidate, MacCatalogFilter.WindowsPlayable),
+    "An untested Windows release must remain selectable without appearing as confirmed.");
+Check(MacCompatibility.BrowseCategory(approved) == MacCatalogFilter.WindowsPlayable,
+    "A current playable Windows report belongs in the confirmed Windows group.");
+var nativeWithWindowsReport = new MacCompatibilityEntry { Mode = "native", Release = "v1",
+    AssetName = "game-macOS.zip", Evidence = "official release", Reports = approved.Reports };
+Check(MacCompatibility.BrowseCategory(nativeWithWindowsReport) == MacCatalogFilter.Native,
+    "A native project must stay in the native group even when its Windows build also works.");
+Check(MacCompatibility.BrowseCategory(new() { Mode = "unknown", Release = "v2", Reports = approved.Reports }) == MacCatalogFilter.Other,
+    "Reports for an old release must not put a project in the confirmed Windows group.");
+var nativeOnlyReport = new MacCompatibilityEntry { Mode = "unknown", Release = "v1", Reports = [new() {
+    Runner = "native", Release = "v1", AssetName = "game-macOS.zip", Result = "playable",
+    Environment = "fixture Mac", Evidence = "fixture gameplay report", TestedAt = DateTimeOffset.UtcNow,
+    PlatformFingerprint = MacGameplay.PlatformFingerprint, RuntimeId = "native" }] };
+Check(MacCompatibility.BrowseCategory(nativeOnlyReport) == MacCatalogFilter.Other,
+    "A native gameplay report must never be treated as confirmed Windows compatibility.");
 Check(MacCompatibility.FilterAssets(Release("game-Windows.zip", "game-Linux.zip"), candidate).Count == 0,
     "Candidate downloads require explicit per-game testing opt-in.");
 Check(MacCompatibility.FilterAssets(Release("game-Windows.zip", "game-Linux.zip", "game-Windows.msi"), candidate, true)
     .Select(a => a.name).SequenceEqual(new[] { "game-Windows.zip" }), "Opt-in excludes Linux and unsupported installers.");
 Check(MacCompatibility.FilterAssets(Release("game-macOS.zip", "game-Windows.zip"), approved)[0].name == "game-macOS.zip",
     "Native assets take priority over CrossOver.");
+Check(GameDataRequirements.Find("Matteo842/CrashBandicoot-Launcher").Details.Contains("SCUS-94900") &&
+    GameDataRequirements.Find("Matteo842/CrashBandicoot-Launcher").Console == "PlayStation (PS1)",
+    "Crash must identify its original PS1 USA disc, independently of the downloaded port platform.");
+Check(GameDataRequirements.Find("unknown/project").DiscId == "Not confirmed",
+    "Unknown game data must not be guessed from the title or port platform.");
+Check(GameDataRequirements.NoReleaseMessage("Crash", false, false).Contains("No native macOS release") &&
+    GameDataRequirements.NoReleaseMessage("Crash", false, false).Contains("Configure Mac launch"),
+    "Missing native releases must explain the selected platform and the manual Windows testing path.");
+var windowsOnlyPlatforms = MacCompatibility.AvailablePlatforms([Release("CrashBandicoot.exe", "CrashBandicoot-Linux")]);
+Check(!windowsOnlyPlatforms.Native && windowsOnlyPlatforms.Windows,
+    "A Windows-only Crash release must never offer the native Mac download option.");
+var bothPlatforms = MacCompatibility.AvailablePlatforms([Release("game-macOS.zip", "game-Windows.zip")]);
+Check(bothPlatforms.Native && bothPlatforms.Windows, "Both platforms remain available when both downloads exist.");
+Check(MacCompatibility.AvailablePlatforms([]) == (false, false),
+    "No releases must leave both download options unavailable.");
+Check(!SteamNotProton.MatchesPreparedExecutable(0, "", "/games/CrashBandicoot.exe", "Crash"),
+    "Downloading a game without a registered shortcut must request Steam preparation.");
+var crashId = SteamNotProton.GameId("/games/CrashBandicoot.exe", "Crash");
+Check(SteamNotProton.MatchesPreparedExecutable(crashId, "/games/CrashBandicoot.exe", "/games/CrashBandicoot.exe", "Crash") &&
+    !SteamNotProton.MatchesPreparedExecutable(crashId, "/games/CrashBandicoot.exe", "/games/Other.exe", "Crash") &&
+    !SteamNotProton.MatchesPreparedExecutable(crashId, "/games/CrashBandicoot.exe", "/games/CrashBandicoot.exe", "Renamed"),
+    "Steam preparation must match the current executable and shortcut identity.");
 var root = Path.Combine(Path.GetTempPath(), "github-launcher-tests-" + Guid.NewGuid());
 Directory.CreateDirectory(root);
 try
@@ -97,6 +139,10 @@ Check(MacCompatibility.FilterAssets(Release("game-macOS.zip"), approved, true, "
     "An explicit Windows preference must not silently fall back to another build.");
 Check(MacGameplay.Current(new() { Release = "v1", AvailableAssets = ["other-Windows.zip"], Reports = approved.Reports }).Count == 0,
     "A removed archive must no longer be shown as currently tested.");
+Check(MacCompatibility.FilterAssets(Release("game-Windows.zip"), approved, true, nativeOnly: true).Count == 0,
+    "An explicit Mac selection must not fall back to Windows even when testing is allowed.");
+Check(MacCompatibility.FilterAssets(Release("game-macOS-universal.zip", "game-Windows.zip"), approved, true, nativeOnly: true)
+    .All(a => a.name.Contains("macOS")), "An explicit Mac selection must offer only native downloads.");
 string steamConfig = "// keep comment\n\"InstallConfigStore\" { \"Software\" { \"Valve\" { \"Steam\" { \"Keep\" \"unchanged\" } } } }";
 var mapped = SteamNotProton.SetToolMapping(steamConfig, 123, "notproton-26.3");
 Check(SteamNotProton.FindMapping(mapped, 123) == "notproton-26.3" && mapped.Contains("// keep comment") && mapped.Contains("\"Keep\" \"unchanged\""),

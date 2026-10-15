@@ -8,7 +8,7 @@ namespace GithubLauncher.Services
 
         public override string DisplayName => "Github Launcher Mac — GitOpsGarage";
         public override string ApplicationId => "GithubLauncher";
-        public override string Repository => "GitOpsGarage/GithubLauncher";
+        public override string Repository => "GitOpsGarage/GithubLauncher-macOS";
         public override string ExecutableName => "GithubLauncher";
         public override string DefaultInstallFolderName => "Apps";
         public override string UserAgent => "GithubLauncher/1.0";

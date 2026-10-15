@@ -24,6 +24,7 @@ namespace GithubLauncher.Models
     {
         private const string DefaultInstalledVersion = "v0.0.0";
         public event Action<Process?>? GameProcessStarted;
+        public Func<GameInfo, string, Task>? MacLaunchSetupRequested { get; set; }
         private string? _latestVersion;
         private string? _installedVersion;
         private string? _preferredVersion;
@@ -42,7 +43,7 @@ namespace GithubLauncher.Models
         public bool IsCustom { get; set; }
         public string CrossOverBottle { get; set; } = string.Empty;
         public bool AllowCrossOverTesting { get; set; }
-        public string MacWindowsRunner { get; set; } = "crossover";
+        public string MacWindowsRunner { get; set; } = "notproton";
         public string SteamAccount { get; set; } = "";
         public string SteamTool { get; set; } = "";
         public ulong SteamShortcutId { get; set; }
@@ -62,6 +63,10 @@ namespace GithubLauncher.Models
                 return MacGameplay.Summary(entry);
             }
         }
+        public string GameDataSummary => GameDataRequirements.Find(Repository).Summary;
+        public string NoReleaseMessage => OperatingSystem.IsMacOS()
+            ? GameDataRequirements.NoReleaseMessage(Name, PreferWindowsBuild, AllowCrossOverTesting)
+            : $"No downloadable releases were found for {Name}.";
         public string MacGameplayDetails => MacGameplay.Details(MacCompatibility.Find(Repository));
         public void RefreshMacGameplayStatus()
         {
@@ -1423,15 +1428,16 @@ namespace GithubLauncher.Models
             return _cachedRelease;
         }
 
+        public async Task<List<GitHubRelease>> FetchPublishedReleasesAsync(HttpClient httpClient)
+        {
+            if (string.IsNullOrWhiteSpace(Repository)) return [];
+            return await GitHubReleaseService.FetchReleasesWithAssetsAsync(
+                httpClient, Repository, GetGitHubApiToken()).ConfigureAwait(false);
+        }
+
         public async Task<List<GitHubRelease>> FetchReleasesAsync(HttpClient httpClient)
         {
-            if (string.IsNullOrWhiteSpace(Repository))
-                return [];
-
-            var releases = await GitHubReleaseService.FetchReleasesWithAssetsAsync(
-                httpClient,
-                Repository,
-                GetGitHubApiToken()).ConfigureAwait(false);
+            var releases = await FetchPublishedReleasesAsync(httpClient).ConfigureAwait(false);
             return OperatingSystem.IsMacOS() ? releases.Where(release => GetDownloadableAssets(release).Count > 0).ToList() : releases;
         }
         public async Task InstallReleaseAsync(HttpClient httpClient, string gamesFolder, AppSettings settings, GitHubRelease release, GitHubAsset selectedAsset)
@@ -1444,7 +1450,7 @@ namespace GithubLauncher.Models
         {
             if (OperatingSystem.IsMacOS())
                 return MacCompatibility.FilterAssets(release, MacCompatibility.Find(Repository), AllowCrossOverTesting, MacWindowsRunner,
-                    MacGameplay.RuntimeIdentity(MacWindowsRunner, SteamTool, AppSettings.Load().CrossOverAppPath), PreferWindowsBuild);
+                    MacGameplay.RuntimeIdentity(MacWindowsRunner, SteamTool, AppSettings.Load().CrossOverAppPath), PreferWindowsBuild, nativeOnly: !PreferWindowsBuild);
             return GitHubReleaseService.GetDownloadableAssets(release);
         }
         private async Task DownloadAndInstallAsync(HttpClient httpClient, string gamesFolder, GitHubRelease? latestRelease, AppSettings settings, GameStatus status)
@@ -1515,7 +1521,7 @@ namespace GithubLauncher.Models
                     latestRelease = (await FetchReleasesAsync(httpClient).ConfigureAwait(false)).FirstOrDefault();
                     if (latestRelease == null)
                     {
-                        await ShowMessageBoxAsync($"No installable Mac/Windows release was found for {Name}.", "No Compatible Release");
+                        await ShowMessageBoxAsync(NoReleaseMessage, "No Compatible Release");
                         Status = GameStatus.NotInstalled;
                         DownloadProgress = 0;
                         return;
@@ -1544,7 +1550,7 @@ namespace GithubLauncher.Models
                 if (availableAssets.Count == 0)
                 {
                     await ShowMessageBoxAsync(OperatingSystem.IsMacOS()
-                        ? $"No installable Mac/Windows asset was found in this release of {Name}. To try a Windows build, enable testing in this game’s Mac launch settings."
+                        ? NoReleaseMessage
                         : $"No download files found for {Name}.", "No Assets");
                     Status = GameStatus.NotInstalled;
                     DownloadProgress = 0;
@@ -2039,6 +2045,11 @@ namespace GithubLauncher.Models
                         .Where(p => p.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)).ToList();
                     needsWine = true;
                 }
+                if (OperatingSystem.IsMacOS() && !PreferWindowsBuild && needsWine)
+                {
+                    await ShowMessageBoxAsync("This game is set to the Mac version, but only a Windows executable is installed. Open Configure Mac launch… to see available releases and configure a Windows runner.", "Choose game version");
+                    return;
+                }
                 if (OperatingSystem.IsMacOS() && needsWine && MacWindowsRunner == "notproton" &&
                     File.Exists(SteamExecutable) && executables.Contains(SteamExecutable))
                 {
@@ -2123,9 +2134,17 @@ namespace GithubLauncher.Models
                     }
                     if (MacWindowsRunner == "notproton")
                     {
-                        if (SteamExecutable != executablePath)
-                            throw new InvalidOperationException("Prepare a Steam / NotProton shortcut for the selected executable in this game’s Mac launch settings.");
-                        startInfo = SteamNotProton.LaunchInfo(SteamShortcutId, executablePath, Name!, SteamTool, SteamAccount);
+                        try
+                        {
+                            if (!SteamNotProton.MatchesPreparedExecutable(SteamShortcutId, SteamExecutable, executablePath, Name!))
+                                throw new InvalidOperationException("The Windows game is downloaded, but its Steam / NotProton shortcut is not prepared for this executable. Close Steam, then click Prepare Steam shortcut below. Saving download settings does not prepare the shortcut.");
+                            startInfo = SteamNotProton.LaunchInfo(SteamShortcutId, executablePath, Name!, SteamTool, SteamAccount);
+                        }
+                        catch (Exception ex) when ((ex is InvalidOperationException or IOException) && MacLaunchSetupRequested != null)
+                        {
+                            await MacLaunchSetupRequested(this, ex.Message);
+                            return;
+                        }
                     }
                     else
                     {

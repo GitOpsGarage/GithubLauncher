@@ -24,13 +24,25 @@ emulators as well as game ports. These numbers are release metadata, not gamepla
 The catalog includes Dusklight (Twilight Princess), Wind Waker HD, and Spider-Man: Edge
 of Time Recompiled. Supplementary fork entries are merged with the upstream catalog.
 
-The filters are "Mac build available", "Gameplay tested", "Windows candidates",
-and "Unassessed". "Only playable results" shows documented playable results for the
-current release, archive, architecture/macOS, and runtime. An empty result means no matching
-gameplay reports exist; it does not mean no games work. Unknown means unassessed, not incompatible. Hover over a support
-label for its source and audited release. Refresh updates stale release evidence using
-GitHub's API, caching it for 24 hours and stopping when rate limited. Offline startup uses
-the full bundled catalog. Mac releases do not need a manual compatibility allowlist.
+Use the **Browse games** selector to choose **All games** (the default),
+**Native Mac builds**, **Windows — confirmed playable on Mac**, or
+**Other games — try on this Mac**. The count shows visible and total catalog entries.
+The old checkbox filters are replaced by this single selection; existing installations
+start with All games unless a selection has been saved in the new selector.
+All games includes every project from the configured and bundled catalogs, including
+emulators. It does not claim to include every game on GitHub.
+
+Native Mac builds have a published macOS archive; this is not a gameplay rating.
+Windows confirmation requires a current playable report for the Windows release,
+archive, architecture/macOS and runtime through CrossOver or Steam / NotProton.
+Native releases appear in the native group even if a Windows report also exists.
+Other games includes unverified Windows candidates and unassessed projects. These
+remain selectable so users can configure and try them. An empty confirmed group
+means no matching reports exist; it does not mean no Windows games work.
+Hover over each card's support label for release evidence and gameplay reports.
+Changing the selector filters the loaded catalog locally. Refresh updates stale release
+evidence using GitHub's API, caching it for 24 hours and stopping when rate limited.
+Offline startup uses the full bundled catalog.
 
 Downloads prefer native macOS archives and ARM builds when available. This installer
 supports ZIP, TAR.GZ, TAR.XZ, TGZ, and DMG. PKG and other system installers
@@ -51,7 +63,10 @@ including missing-library loader errors. It does not silently install game depen
 
 ## Windows builds through CrossOver
 
-In Settings, configure the CrossOver app path and an existing bottle name.
+Steam / NotProton is the default Windows launch method for new games. Existing saved
+runner choices are preserved. Each game can switch to direct CrossOver in
+**Configure Mac launch…**. For direct CrossOver, configure the app path and an existing
+bottle name in Settings.
 Right-click a library game and choose "Configure Mac launch…" to save a per-game bottle
 and opt into testing unverified Windows builds. Adding a candidate opens this dialog.
 Opt-in does not mark a game as tested. Create and
@@ -72,8 +87,8 @@ project for the matching Steam client versions.
 2. Add a game, open **Configure Mac launch…**, and choose **Steam / NotProton**.
    Select an existing Steam account and installed compatibility tool. Enable testing
    only when the Windows build lacks a matching playable report.
-3. Native builds are preferred. Check **Use Windows build even when a native Mac build
-   is available** when you deliberately want the Windows edition, then save settings
+3. Select **Windows — Steam / NotProton or CrossOver** in the game version selector
+   when you want the Windows edition, then save settings
    and install that build.
 4. Close Steam, select the installed Windows `.exe`, and click **Prepare in Steam**.
    The launcher registers that executable directly in the selected account's
@@ -110,7 +125,7 @@ Reports are local observations, not Valve certification; another Mac model or gr
 configuration can behave differently even on the same architecture/macOS.
 
 To contribute public evidence, use the fork's
-[compatibility report form](https://github.com/GitOpsGarage/GithubLauncher/issues/new?template=mac-compatibility.yml).
+[compatibility report form](https://github.com/GitOpsGarage/GithubLauncher-macOS/issues/new?template=mac-compatibility.yml).
 The launcher does not publish local reports automatically.
 
 User entries override the bundled entries by repository. A different Windows release or asset requires

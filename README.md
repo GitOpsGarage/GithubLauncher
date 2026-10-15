@@ -10,12 +10,12 @@ The original MIT license and project attribution are preserved.
 - Native macOS releases take priority; each game can explicitly select its Windows build.
 - A release audit covers the full bundled catalog, including Twilight Princess
   (Dusklight), Wind Waker HD, and Spider-Man: Edge of Time Recompiled.
-- Filters distinguish **Mac build available**, **Gameplay tested**, **Windows candidates**,
-  and **Unassessed**. **Only playable results** requires documented gameplay for the release
-  and asset on the current architecture/macOS and runtime. Published builds are not gameplay ratings.
+- One catalog selector offers **All games** (default), **Native Mac builds**,
+  **Windows — confirmed playable on Mac**, and **Other games — try on this Mac**.
+  Windows confirmation requires a current gameplay report; unverified projects remain selectable.
 - Native ZIP, TAR.GZ, TAR.XZ, TGZ, and DMG installation preserves complete payloads,
   including tools/SDKs stored beside an app bundle.
-- Windows games can use direct CrossOver bottles or Steam / NotProton shortcuts.
+- New Windows games default to Steam / NotProton; each game can switch to direct CrossOver.
   Steam receives the actual Windows executable and selected installed NotProton tool.
   Unverified Windows builds require explicit per-game testing opt-in.
 - Record **Playable**, **Playable with adjustments**, or **Unsupported** separately
@@ -31,13 +31,13 @@ Steam client using CrossOver. Install and configure it separately, then use
 The launcher backs up Steam configuration before registering the shortcut and tool.
 Gameplay reports stay local; this fork does not claim Valve certification or supply
 pre-certified Windows games. Submit reproducible reports through the fork's
-[compatibility report form](https://github.com/GitOpsGarage/GithubLauncher/issues/new?template=mac-compatibility.yml).
+[compatibility report form](https://github.com/GitOpsGarage/GithubLauncher-macOS/issues/new?template=mac-compatibility.yml).
 
 ## Development and commits
 
 ```sh
-git clone --recurse-submodules https://github.com/GitOpsGarage/GithubLauncher.git
-cd GithubLauncher
+git clone --recurse-submodules https://github.com/GitOpsGarage/GithubLauncher-macOS.git
+cd GithubLauncher-macOS
 bundle install
 bundle exec overcommit --install
 bundle exec overcommit --sign
@@ -84,7 +84,7 @@ A modern, user-friendly launcher application for managing and running GitHub-hos
 
 ### Installation
 
-1. Download the latest release from the [Releases](https://github.com/GitOpsGarage/GithubLauncher/releases) page
+1. Download the latest release from the [Releases](https://github.com/GitOpsGarage/GithubLauncher-macOS/releases) page
 2. Extract the downloaded archive to your preferred location
 3. Run the executable.
 
@@ -140,5 +140,5 @@ Each app entry requires the following properties:
 ## Support
 
 If you encounter any issues or have questions:
-- [Open an issue](https://github.com/GitOpsGarage/GithubLauncher/issues)
+- [Open an issue](https://github.com/GitOpsGarage/GithubLauncher-macOS/issues)
 - Check existing issues for solutions

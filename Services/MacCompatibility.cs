@@ -5,6 +5,8 @@ using GitHubLauncher.Core.Services;
 
 namespace GithubLauncher.Services;
 
+public enum MacCatalogFilter { All, Native, WindowsPlayable, Other }
+
 public sealed class MacCompatibilityEntry
 {
     public string Mode { get; set; } = "native";
@@ -72,7 +74,7 @@ public static class MacCompatibility
         name.EndsWith(".tgz", StringComparison.OrdinalIgnoreCase) ||
         name.EndsWith(".dmg", StringComparison.OrdinalIgnoreCase);
 
-    public static List<GitHubAsset> FilterAssets(GitHubRelease release, MacCompatibilityEntry? entry, bool allowTesting = false, string runner = "crossover", string? runtimeId = null, bool preferWindows = false)
+    public static List<GitHubAsset> FilterAssets(GitHubRelease release, MacCompatibilityEntry? entry, bool allowTesting = false, string runner = "crossover", string? runtimeId = null, bool preferWindows = false, bool nativeOnly = false)
     {
         var assets = GitHubReleaseService.GetDownloadableAssets(release);
         var native = assets.Where(a => IsSupportedArchive(a.name) &&
@@ -87,7 +89,7 @@ public static class MacCompatibility
             System.Runtime.InteropServices.Architecture.X64)
             native.RemoveAll(a => IsArm(a.name) && !IsIntel(a.name) && !IsUniversal(a.name));
 
-        if (native.Count > 0 && !preferWindows)
+        if (nativeOnly || (native.Count > 0 && !preferWindows))
             return native.OrderBy(a => IsDebug(a.name)).ThenByDescending(a => IsArm(a.name) || IsUniversal(a.name))
                 .ThenBy(a => a.name.EndsWith(".dmg", StringComparison.OrdinalIgnoreCase)).ToList();
 
@@ -99,6 +101,10 @@ public static class MacCompatibility
             (IsSupportedArchive(a.name) || a.name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) &&
             PlatformAssetMatcher.IsWindowsAsset(a.name)).ToList();
     }
+
+    public static (bool Native, bool Windows) AvailablePlatforms(IEnumerable<GitHubRelease> releases) =>
+        (releases.Any(r => FilterAssets(r, null, nativeOnly: true).Count > 0),
+         releases.Any(r => FilterAssets(r, null, allowTesting: true, preferWindows: true).Count > 0));
 
     private static bool IsArm(string name) =>
         PlatformAssetMatcher.HasAnyOf(name.ToLowerInvariant(), "arm64", "aarch64", "_arm", "-arm", "applesilicon", "apple-silicon", "apple_silicon");
@@ -143,6 +149,17 @@ public static class MacCompatibility
             (IsSupportedArchive(entry.AssetName) || entry.AssetName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))) return "candidate";
         return "unknown";
     }
+
+    public static MacCatalogFilter BrowseCategory(MacCompatibilityEntry? entry)
+    {
+        if (CatalogCategory(entry) == "native") return MacCatalogFilter.Native;
+        return MacGameplay.Current(entry).Any(r => r.IsPlayable &&
+            r.Runner is "crossover" or "notproton" && PlatformAssetMatcher.IsWindowsAsset(r.AssetName))
+            ? MacCatalogFilter.WindowsPlayable : MacCatalogFilter.Other;
+    }
+
+    public static bool MatchesCatalogFilter(MacCompatibilityEntry? entry, MacCatalogFilter filter) =>
+        filter == MacCatalogFilter.All || BrowseCategory(entry) == filter;
 
     public static ProcessStartInfo CrossOverStartInfo(string appPath, string bottle, string executable, string gamePath)
     {
